@@ -1,6 +1,7 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using FluentValidation;
+using System.Net.Mime;
 using System.Text.Json;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Middleware
@@ -28,7 +29,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
 
         private static Task HandleValidationExceptionAsync(HttpContext context, ValidationException exception)
         {
-            context.Response.ContentType = "application/json";
+            context.Response.ContentType = MediaTypeNames.Application.Json;
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
 
             var response = new ApiResponse

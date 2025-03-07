@@ -35,6 +35,7 @@ public class AuthController : BaseController
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Authentication token if successful</returns>
     [HttpPost]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(ApiResponseWithData<AuthenticateUserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status401Unauthorized)]

@@ -6,6 +6,7 @@ using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
+using Ambev.DeveloperEvaluation.WebApi.Startups;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -27,7 +28,7 @@ public class Program
             builder.Services.AddEndpointsApiExplorer();
 
             builder.AddBasicHealthChecks();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwagger("Ambev.DeveloperEvaluation.WebApi", "v1");
 
             builder.Services.AddDbContext<DefaultContext>(options =>
                 options.UseNpgsql(
@@ -68,7 +69,7 @@ public class Program
 
             app.UseBasicHealthChecks();
 
-            app.MapControllers();
+            app.MapControllers().RequireAuthorization();
 
             app.Run();
         }
