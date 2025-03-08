@@ -26,6 +26,15 @@ namespace Ambev.DeveloperEvaluation.ORM.Mapping
                 n.Property(_ => _.Rate).HasColumnName("Rate").IsRequired().HasPrecision(10, 2);
                 n.Property(_ => _.Count).HasColumnName("RateCount").IsRequired();
             });
+
+            builder.Property<Guid>("CategoryId")
+                .IsRequired();
+
+            builder.HasOne(u => u.Category)
+                .WithMany()
+                .HasForeignKey("CategoryId")
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
         }
     }
 }
