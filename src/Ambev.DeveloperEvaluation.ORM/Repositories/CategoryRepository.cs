@@ -32,5 +32,14 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
             return await _context.Categories
                 .FirstOrDefaultAsync(u => EF.Functions.ILike(u.Name, $"%{name}%"), cancellationToken);
         }
+
+        /// <inheritdoc/>
+        public async Task<ICollection<string>> ListAllCategoriesBeingUsedAsync(CancellationToken cancellationToken)
+        {
+            return await _context.Categories
+                .Where(c => c.Products.Any())
+                .Select(c => c.Name)
+                .ToArrayAsync();
+        }
     }
 }
