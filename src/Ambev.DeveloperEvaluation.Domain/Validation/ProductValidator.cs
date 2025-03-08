@@ -36,5 +36,8 @@ internal class ProductValidator : AbstractValidator<Product>
             RuleFor(p => p.Rating.Count)
                 .GreaterThan(0).WithMessage("Product rating count must be greater than 0.");
         });
+
+        RuleFor(product => product.Category)
+            .NotNull();
     }
 }
