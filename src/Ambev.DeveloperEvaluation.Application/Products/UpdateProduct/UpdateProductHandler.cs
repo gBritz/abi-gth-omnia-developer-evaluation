@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Services;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
@@ -12,6 +13,7 @@ namespace Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
 public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, UpdateProductResult>
 {
     private readonly IProductRepository _productRepository;
+    private readonly EnsureCategoryService _ensureCategoryService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
@@ -19,14 +21,17 @@ public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, Update
     /// Initializes a new instance of <see cref="UpdateProductHandler"/>.
     /// </summary>
     /// <param name="productRepository">The product repository</param>
+    /// <param name="ensureCategoryService">The category service</param>
     /// <param name="unitOfWork">Unit of work</param>
     /// <param name="mapper">The AutoMapper instance</param>
     public UpdateProductHandler(
         IProductRepository productRepository,
+        EnsureCategoryService ensureCategoryService,
         IUnitOfWork unitOfWork,
         IMapper mapper)
     {
         _productRepository = productRepository;
+        _ensureCategoryService = ensureCategoryService;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
@@ -54,6 +59,11 @@ public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, Update
             throw new InvalidOperationException($"Product with title {command.Title} already exists");
 
         product.Change(command.Title, command.Price, command.Description, command.Image, command.Rating, null!);
+
+        if (!product.SameCategoryName(command.CategoryName))
+        {
+            product.Category = product.Category = await _ensureCategoryService.EnsureCategoryNameAsync(command.CategoryName, cancellationToken);
+        }
 
         await _unitOfWork.ApplyChangesAsync(cancellationToken);
         return _mapper.Map<UpdateProductResult>(product);
