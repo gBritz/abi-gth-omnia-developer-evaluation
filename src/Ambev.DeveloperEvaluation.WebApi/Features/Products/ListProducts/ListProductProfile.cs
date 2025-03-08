@@ -15,6 +15,7 @@ public class ListProductProfile : Profile
     public ListProductProfile()
     {
         CreateMap<ListProductRequest, ListProductCommand>();
-        CreateMap<ProductResult, ProductResponse>();
+        CreateMap<ProductResult, ProductResponse>()
+            .ForMember(c => c.Category, opt => opt.MapFrom(s => s.CategoryName));
     }
 }

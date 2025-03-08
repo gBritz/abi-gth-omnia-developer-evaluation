@@ -14,7 +14,9 @@ public class UpdateProductProfile : Profile
     /// </summary>
     public UpdateProductProfile()
     {
-        CreateMap<UpdateProductRequest, UpdateProductCommand>();
-        CreateMap<UpdateProductResult, UpdateProductResponse>();
+        CreateMap<UpdateProductRequest, UpdateProductCommand>()
+            .ForMember(c => c.CategoryName, opt => opt.MapFrom(s => s.Category));
+        CreateMap<UpdateProductResult, UpdateProductResponse>()
+            .ForMember(c => c.Category, opt => opt.MapFrom(s => s.CategoryName));
     }
 }
