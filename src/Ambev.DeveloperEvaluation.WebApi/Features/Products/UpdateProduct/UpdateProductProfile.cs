@@ -1,4 +1,6 @@
+using Ambev.DeveloperEvaluation.Application.Products;
 using Ambev.DeveloperEvaluation.Application.Products.UpdateProduct;
+using Ambev.DeveloperEvaluation.WebApi.Features.Products;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.UpdateProduct;
 using AutoMapper;
 
@@ -16,7 +18,7 @@ public class UpdateProductProfile : Profile
     {
         CreateMap<UpdateProductRequest, UpdateProductCommand>()
             .ForMember(c => c.CategoryName, opt => opt.MapFrom(s => s.Category));
-        CreateMap<UpdateProductResult, UpdateProductResponse>()
+        CreateMap<ProductResult, ProductResponse>()
             .ForMember(c => c.Category, opt => opt.MapFrom(s => s.CategoryName));
     }
 }
