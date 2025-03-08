@@ -57,14 +57,25 @@ public class Product : BaseEntity
     public Rating Rating { get; set; }
 
     /// <summary>
-    /// Change name and price.
+    /// Edit product info.
     /// </summary>
     /// <param name="name">Name of product.</param>
     /// <param name="price">Price of product.</param>
-    public void Update(string name, decimal price)
+    /// <param name="description">Description of product.</param>
+    /// <param name="image">Image of product.</param>
+    /// <param name="rating">Rating of product.</param>
+    public void Update(
+        string name,
+        decimal price,
+        string description,
+        string image,
+        Rating rating)
     {
         Title = name;
         Price = price;
+        Description = description;
+        Image = image;
+        Rating = rating;
         UpdatedAt = DateTime.UtcNow;
     }
 
