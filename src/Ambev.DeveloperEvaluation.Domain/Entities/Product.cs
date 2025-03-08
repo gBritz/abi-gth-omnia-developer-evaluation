@@ -1,6 +1,7 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Validation;
+using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
@@ -19,16 +20,26 @@ public class Product : BaseEntity
     }
 
     /// <summary>
-    /// Gets the product's name.
+    /// Gets the product's title.
     /// Must not be null or empty.
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets the product's full price.
     /// Must be greater than zero.
     /// </summary>
     public decimal Price { get; set; }
+
+    /// <summary>
+    /// Gets the product's description.
+    /// </summary>
+    public string Description { get; set; }
+
+    /// <summary>
+    /// Gets the product's cover image.
+    /// </summary>
+    public string Image { get; set; }
 
     /// <summary>
     /// Gets the date and time when the product was created.
@@ -41,14 +52,30 @@ public class Product : BaseEntity
     public DateTime? UpdatedAt { get; set; }
 
     /// <summary>
-    /// Change name and price.
+    /// Gets the product's rating.
+    /// </summary>
+    public Rating Rating { get; set; }
+
+    /// <summary>
+    /// Edit product info.
     /// </summary>
     /// <param name="name">Name of product.</param>
     /// <param name="price">Price of product.</param>
-    public void Update(string name, decimal price)
+    /// <param name="description">Description of product.</param>
+    /// <param name="image">Image of product.</param>
+    /// <param name="rating">Rating of product.</param>
+    public void Update(
+        string name,
+        decimal price,
+        string description,
+        string image,
+        Rating rating)
     {
-        Name = name;
+        Title = name;
         Price = price;
+        Description = description;
+        Image = image;
+        Rating = rating;
         UpdatedAt = DateTime.UtcNow;
     }
 
@@ -62,7 +89,8 @@ public class Product : BaseEntity
     /// </returns>
     /// <remarks>
     /// <listheader>The validation includes checking:</listheader>
-    /// <list type="bullet">Name length</list>
+    /// <list type="bullet">Title length</list>
+    /// <list type="bullet">Description length</list>
     /// <list type="bullet">Price amount</list>
     /// </remarks>
     public ValidationResultDetail Validate()

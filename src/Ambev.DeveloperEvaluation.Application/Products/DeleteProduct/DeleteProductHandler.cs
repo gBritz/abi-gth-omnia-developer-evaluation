@@ -45,7 +45,12 @@ public class DeleteProductHandler : IRequestHandler<DeleteProductCommand, Delete
         var success = (await _unitOfWork.ApplyChangesAsync(cancellationToken)) > 0;
 
         if (!success)
-            throw new KeyNotFoundException($"Product with ID {request.Id} not found.");
+        {
+            throw new ValidationException(
+            [
+                new(string.Empty, $"Product with ID {request.Id} not found."),
+            ]);
+        }
 
         return new DeleteProductResponse { Success = true };
     }
