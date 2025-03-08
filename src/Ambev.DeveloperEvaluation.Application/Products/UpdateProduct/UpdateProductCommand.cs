@@ -50,6 +50,11 @@ public class UpdateProductCommand : IRequest<UpdateProductResult>
     /// </summary>
     public Rating Rating { get; set; } = default!;
 
+    /// <summary>
+    /// Gets the product's category name.
+    /// </summary>
+    public string CategoryName { get; private set; } = default!;
+
     public ValidationResultDetail Validate()
     {
         var validator = new UpdateProductCommandValidator();

@@ -40,6 +40,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
         public async Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.Products
+                .Include(p => p.Category)
                 .FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
         }
 
@@ -56,6 +57,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
             CancellationToken cancellationToken = default)
         {
             return await _context.Products
+                .Include(p => p.Category)
                 .ToPaginateAsync(query, cancellationToken);
         }
     }

@@ -41,4 +41,9 @@ public class UpdateProductResult
     /// Gets the product's rating.
     /// </summary>
     public Rating Rating { get; set; } = default!;
+
+    /// <summary>
+    /// Gets the product's category name.
+    /// </summary>
+    public string CategoryName { get; private set; } = default!;
 }
