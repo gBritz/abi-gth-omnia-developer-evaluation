@@ -20,7 +20,7 @@ namespace Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 /// <see cref="AbstractValidator{T}"/> to ensure that the fields are correctly 
 /// populated and follow the required rules.
 /// </remarks>
-public class CreateProductCommand : IRequest<CreateProductResult>
+public class CreateProductCommand : IRequest<ProductResult>
 {
     /// <summary>
     /// Gets or sets the name of the product to be created.

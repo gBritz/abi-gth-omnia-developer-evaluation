@@ -1,4 +1,6 @@
+using Ambev.DeveloperEvaluation.Application.Products;
 using Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
+using Ambev.DeveloperEvaluation.WebApi.Features.Products;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.CreateProduct;
 using AutoMapper;
 
@@ -16,7 +18,7 @@ public class CreateProductProfile : Profile
     {
         CreateMap<CreateProductRequest, CreateProductCommand>()
             .ForMember(c => c.CategoryName, opt => opt.MapFrom(s => s.Category));
-        CreateMap<CreateProductResult, CreateProductResponse>()
+        CreateMap<ProductResult, ProductResponse>()
             .ForMember(c => c.Category, opt => opt.MapFrom(s => s.CategoryName));
     }
 }

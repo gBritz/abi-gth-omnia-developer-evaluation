@@ -8,7 +8,7 @@ namespace Ambev.DeveloperEvaluation.Application.Products.GetProduct;
 /// <summary>
 /// Handler for processing <see cref="GetProductCommand"/> requests.
 /// </summary>
-public class GetProductHandler : IRequestHandler<GetProductCommand, GetProductResult>
+public class GetProductHandler : IRequestHandler<GetProductCommand, ProductResult>
 {
     private readonly IProductRepository _productRepository;
     private readonly IMapper _mapper;
@@ -33,7 +33,7 @@ public class GetProductHandler : IRequestHandler<GetProductCommand, GetProductRe
     /// <param name="request">The GetProduct command</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The product details if found</returns>
-    public async Task<GetProductResult> Handle(GetProductCommand request, CancellationToken cancellationToken)
+    public async Task<ProductResult> Handle(GetProductCommand request, CancellationToken cancellationToken)
     {
         var validator = new GetProductValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
@@ -50,6 +50,6 @@ public class GetProductHandler : IRequestHandler<GetProductCommand, GetProductRe
             ]);
         }
 
-        return _mapper.Map<GetProductResult>(product);
+        return _mapper.Map<ProductResult>(product);
     }
 }
