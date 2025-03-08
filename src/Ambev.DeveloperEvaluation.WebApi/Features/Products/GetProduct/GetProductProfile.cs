@@ -15,6 +15,7 @@ public class GetProductProfile : Profile
     public GetProductProfile()
     {
         CreateMap<GetProductRequest, GetProductCommand>();
-        CreateMap<GetProductResult, GetProductResponse>();
+        CreateMap<GetProductResult, GetProductResponse>()
+            .ForMember(c => c.Category, opt => opt.MapFrom(s => s.CategoryName));
     }
 }
