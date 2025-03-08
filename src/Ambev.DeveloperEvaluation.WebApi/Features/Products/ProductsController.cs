@@ -9,7 +9,7 @@ using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.CreateProduct;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.DeleteProduct;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.GetProduct;
-using Ambev.DeveloperEvaluation.WebApi.Features.Products.ListProduct;
+using Ambev.DeveloperEvaluation.WebApi.Features.Products.ListProducts;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.SearchPaginatedProductsByCategory;
 using Ambev.DeveloperEvaluation.WebApi.Features.Products.UpdateProduct;
 using AutoMapper;
@@ -46,7 +46,7 @@ public class ProductsController : BaseController
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The created product details</returns>
     [HttpPost]
-    [ProducesResponseType(typeof(ApiResponseWithData<CreateProductResponse>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiResponseWithData<ProductResponse>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request, CancellationToken cancellationToken)
     {
@@ -59,7 +59,7 @@ public class ProductsController : BaseController
         var command = _mapper.Map<CreateProductCommand>(request);
         var result = await _mediator.Send(command, cancellationToken);
 
-        return Created(nameof(GetProduct), new { result.Id }, _mapper.Map<CreateProductResponse>(result), "Product created successfully");
+        return Created(nameof(GetProduct), new { result.Id }, _mapper.Map<ProductResponse>(result), "Product created successfully");
     }
 
     /// <summary>
@@ -69,7 +69,7 @@ public class ProductsController : BaseController
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The product details if found</returns>
     [HttpGet("{id}", Name = nameof(GetProduct))]
-    [ProducesResponseType(typeof(ApiResponseWithData<GetProductResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponseWithData<ProductResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetProduct([FromRoute] Guid id, CancellationToken cancellationToken)
@@ -84,7 +84,7 @@ public class ProductsController : BaseController
         var command = _mapper.Map<GetProductCommand>(request.Id);
         var result = await _mediator.Send(command, cancellationToken);
 
-        return Ok(_mapper.Map<GetProductResponse>(result), "Product retrieved successfully");
+        return Ok(_mapper.Map<ProductResponse>(result), "Product retrieved successfully");
     }
 
     /// <summary>
@@ -93,10 +93,10 @@ public class ProductsController : BaseController
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Paginated list of products</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(PaginatedResponse<GetProductResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PaginatedResponse<ProductResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ListProduct([FromQuery] ListProductRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> ListProduct([FromQuery] ListProductsRequest request, CancellationToken cancellationToken)
     {
         var command = _mapper.Map<ListProductCommand>(request);
         var response = await _mediator.Send(command, cancellationToken);
@@ -113,7 +113,7 @@ public class ProductsController : BaseController
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The created product details</returns>
     [HttpPut("{id}")]
-    [ProducesResponseType(typeof(ApiResponseWithData<UpdateProductResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponseWithData<ProductResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] UpdateProductRequest request, CancellationToken cancellationToken)
     {
@@ -129,7 +129,7 @@ public class ProductsController : BaseController
         var command = _mapper.Map<UpdateProductCommand>(request);
         var response = await _mediator.Send(command, cancellationToken);
 
-        return Ok(_mapper.Map<UpdateProductResponse>(response), "Product updated successfully");
+        return Ok(_mapper.Map<ProductResponse>(response), "Product updated successfully");
     }
 
     /// <summary>
