@@ -35,6 +35,11 @@ public class Category : BaseEntity
     public DateTime? UpdatedAt { get; private set; }
 
     /// <summary>
+    /// Gets relationship of products.
+    /// </summary>
+    public virtual ICollection<Product> Products { get; private set; } = [];
+
+    /// <summary>
     /// Change category info.
     /// </summary>
     /// <param name="name">Name of product.</param>
