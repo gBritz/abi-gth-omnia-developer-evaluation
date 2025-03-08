@@ -1,5 +1,7 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Entities;
+﻿using Ambev.DeveloperEvaluation.Common.Repositories.Pagination;
+using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
+using Ambev.DeveloperEvaluation.ORM.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ambev.DeveloperEvaluation.ORM.Repositories
@@ -42,18 +44,19 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
         }
 
         /// <inheritdoc/>
-        public async Task<Product?> GetByNameAsync(string name, CancellationToken cancellationToken = default)
+        public async Task<Product?> GetByTitleAsync(string name, CancellationToken cancellationToken = default)
         {
             return await _context.Products
-                .FirstOrDefaultAsync(u => u.Name == name, cancellationToken);
+                .FirstOrDefaultAsync(u => u.Title == name, cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task<ICollection<Product>> GetAllAsync(string name, CancellationToken cancellationToken = default)
+        public async Task<PaginationQueryResult<Product>> PaginateAsync(
+            PaginationQuery query,
+            CancellationToken cancellationToken = default)
         {
             return await _context.Products
-                .Where(o => EF.Functions.ILike(o.Name, $"%{name}%"))
-                .ToArrayAsync(cancellationToken);
+                .ToPaginateAsync(query, cancellationToken);
         }
     }
 }

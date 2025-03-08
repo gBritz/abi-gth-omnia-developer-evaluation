@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Validation;
+using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 using FluentValidation;
 using MediatR;
 
@@ -23,12 +24,27 @@ public class CreateProductCommand : IRequest<CreateProductResult>
     /// <summary>
     /// Gets or sets the name of the product to be created.
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public string Title { get; set; } = default!;
+
+    /// <summary>
+    /// Gets the product's description.
+    /// </summary>
+    public string Description { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the price for the product.
     /// </summary>
-    public double Price { get; set; }
+    public decimal Price { get; set; }
+
+    /// <summary>
+    /// Gets the product's cover image.
+    /// </summary>
+    public string Image { get; set; } = default!;
+
+    /// <summary>
+    /// Gets the product's rating.
+    /// </summary>
+    public Rating Rating { get; set; } = default!;
 
     public ValidationResultDetail Validate()
     {

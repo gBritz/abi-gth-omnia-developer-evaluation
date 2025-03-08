@@ -23,9 +23,16 @@ public class DefaultContext : DbContext, IUnitOfWork
     }
 
     /// <inheritdoc/>
-    public Task<int> ApplyChangesAsync(CancellationToken cancellationToken = default)
+    public async Task<int> ApplyChangesAsync(CancellationToken cancellationToken = default)
     {
-        return SaveChangesAsync(cancellationToken);
+        try
+        {
+            return await SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            return 0;
+        }
     }
 }
 
