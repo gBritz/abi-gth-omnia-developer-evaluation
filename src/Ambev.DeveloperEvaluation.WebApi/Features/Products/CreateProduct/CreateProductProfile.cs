@@ -14,7 +14,9 @@ public class CreateProductProfile : Profile
     /// </summary>
     public CreateProductProfile()
     {
-        CreateMap<CreateProductRequest, CreateProductCommand>();
-        CreateMap<CreateProductResult, CreateProductResponse>();
+        CreateMap<CreateProductRequest, CreateProductCommand>()
+            .ForMember(c => c.CategoryName, opt => opt.MapFrom(s => s.Category));
+        CreateMap<CreateProductResult, CreateProductResponse>()
+            .ForMember(c => c.Category, opt => opt.MapFrom(s => s.CategoryName));
     }
 }
