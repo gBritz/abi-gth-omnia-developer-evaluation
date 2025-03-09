@@ -60,6 +60,7 @@ public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, Produc
             throw new DomainException(BusinessRuleMessages.ProductTitleExists(command.Title).Detail);
 
         product.Change(command.Title, command.Price, command.Description, command.Image, command.Rating, null!);
+        product.SetStockQuantity(command.Quantity);
 
         if (!product.SameCategoryName(command.CategoryName))
         {
