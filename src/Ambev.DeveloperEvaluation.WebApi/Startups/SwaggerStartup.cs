@@ -25,6 +25,15 @@ namespace Ambev.DeveloperEvaluation.WebApi.Startups
             });
         }
 
+        public static void UseSwagger(this IApplicationBuilder app)
+        {
+            app.UseSwagger(o =>
+            {
+                o.PreSerializeFilters.Add(UseLowerCaseRoutingConventionFilter);
+            });
+            app.UseSwaggerUI();
+        }
+
         private static void AddSecurity(this SwaggerGenOptions swaggerOptions)
         {
             const string bearer = "Bearer";
@@ -56,6 +65,17 @@ namespace Ambev.DeveloperEvaluation.WebApi.Startups
                     Array.Empty<string>()
                 },
             });
+        }
+
+        private static void UseLowerCaseRoutingConventionFilter(OpenApiDocument document, HttpRequest request)
+        {
+            var paths = document.Paths.ToDictionary(item => item.Key.ToLowerInvariant(), item => item.Value);
+            document.Paths.Clear();
+
+            foreach (var pathItem in paths)
+            {
+                document.Paths.Add(pathItem.Key, pathItem.Value);
+            }
         }
     }
 }
