@@ -1,4 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Repositories;
+﻿using Ambev.DeveloperEvaluation.Domain.Exceptions;
+using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
@@ -30,25 +31,20 @@ public class GetProductHandler : IRequestHandler<GetProductCommand, ProductResul
     /// <summary>
     /// Handles the <see cref="GetProductCommand"/> request.
     /// </summary>
-    /// <param name="request">The GetProduct command</param>
+    /// <param name="command">The GetProduct command</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The product details if found</returns>
-    public async Task<ProductResult> Handle(GetProductCommand request, CancellationToken cancellationToken)
+    public async Task<ProductResult> Handle(GetProductCommand command, CancellationToken cancellationToken)
     {
         var validator = new GetProductValidator();
-        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+        var validationResult = await validator.ValidateAsync(command, cancellationToken);
 
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        var product = await _productRepository.GetByIdAsync(request.Id, cancellationToken);
+        var product = await _productRepository.GetByIdAsync(command.Id, cancellationToken);
         if (product is null)
-        {
-            throw new ValidationException(
-            [
-                new(string.Empty, $"Product with ID {request.Id} was not found."),
-            ]);
-        }
+            throw new NotFoundDomainException(BusinessRuleMessages.ProductNotFound(command.Id));
 
         return _mapper.Map<ProductResult>(product);
     }

@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Exceptions;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Services;
 using AutoMapper;
@@ -52,11 +53,11 @@ public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, Produc
 
         var product = await _productRepository.GetByIdAsync(command.Id, cancellationToken);
         if (product is null)
-            throw new InvalidOperationException($"Product with id {command.Id} already exists");
+            throw new NotFoundDomainException(BusinessRuleMessages.ProductNotFound(command.Id));
 
         var existingProduct = await _productRepository.GetByTitleAsync(command.Title, cancellationToken);
         if (existingProduct is not null && existingProduct.Id != command.Id)
-            throw new InvalidOperationException($"Product with title {command.Title} already exists");
+            throw new DomainException(BusinessRuleMessages.ProductTitleExists(command.Title).Detail);
 
         product.Change(command.Title, command.Price, command.Description, command.Image, command.Rating, null!);
 

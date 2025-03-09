@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Exceptions;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Services;
 using AutoMapper;
@@ -53,7 +54,7 @@ public class CreateProductHandler : IRequestHandler<CreateProductCommand, Produc
 
         var existingProduct = await _productRepository.GetByTitleAsync(command.Title, cancellationToken);
         if (existingProduct != null)
-            throw new InvalidOperationException($"Product with title {command.Title} already exists.");
+            throw new DomainException(BusinessRuleMessages.ProductTitleExists(command.Title).Detail);
 
         var product = _mapper.Map<Product>(command);
 
