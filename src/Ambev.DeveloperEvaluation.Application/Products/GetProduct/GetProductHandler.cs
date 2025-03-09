@@ -46,7 +46,7 @@ public class GetProductHandler : IRequestHandler<GetProductCommand, ProductResul
         {
             throw new ValidationException(
             [
-                new(string.Empty, $"Product with ID {request.Id} not found."),
+                new(string.Empty, $"Product with ID {request.Id} was not found."),
             ]);
         }
 
