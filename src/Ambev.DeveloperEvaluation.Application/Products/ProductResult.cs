@@ -3,7 +3,7 @@ using Ambev.DeveloperEvaluation.Domain.ValueObjects;
 namespace Ambev.DeveloperEvaluation.Application.Products;
 
 /// <summary>
-/// Response model for ListProduct operation.
+/// Result model for product operations.
 /// </summary>
 public class ProductResult
 {
