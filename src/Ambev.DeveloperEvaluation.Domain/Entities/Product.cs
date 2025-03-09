@@ -42,6 +42,11 @@ public class Product : BaseEntity
     public string Image { get; private set; }
 
     /// <summary>
+    /// Gets the stock quantity
+    /// </summary>
+    public int StockQuantity { get; private set; }
+
+    /// <summary>
     /// Gets the date and time when the product was created.
     /// </summary>
     public DateTime CreatedAt { get; init; }
@@ -93,6 +98,42 @@ public class Product : BaseEntity
     /// <returns>True case product already this category name, false otherwise.</returns>
     public bool SameCategoryName(string categoryName) =>
         Category?.Name.Equals(categoryName, StringComparison.OrdinalIgnoreCase) ?? false;
+
+    /// <summary>
+    /// Decrease the product quantity in storage.
+    /// </summary>
+    /// <param name="quantity">Quantity to reduce</param>
+    public void DecreaseQuantity(int quantity)
+    {
+        if (quantity <= 0)
+        {
+            throw new ArgumentOutOfRangeException("Quantity must be positive value to the decrease quantity.");
+        }
+
+        StockQuantity -= quantity;
+
+        if (StockQuantity < 0)
+        {
+            throw new DomainException($"Stock quantity must not be negative #{Id}, current stock: {StockQuantity}, try to decrease {quantity}");
+        }
+
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Increase the product quantity in storage.
+    /// </summary>
+    /// <param name="quantity">Quantity to increase</param>
+    public void IncreaseQuantity(int quantity)
+    {
+        if (quantity <= 0)
+        {
+            throw new ArgumentOutOfRangeException("Quantity must be positive value to the increase quantity.");
+        }
+
+        StockQuantity += quantity;
+        UpdatedAt = DateTime.UtcNow;
+    }
 
     /// <summary>
     /// Performs validation of the user entity using the <see cref="ProductValidator"/> rules.
