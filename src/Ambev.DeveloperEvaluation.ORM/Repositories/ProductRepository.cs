@@ -52,6 +52,14 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
         }
 
         /// <inheritdoc/>
+        public async Task<ICollection<Product>> ListByIdsAsync(Guid[] ids, CancellationToken cancellationToken = default)
+        {
+            return await _context.Products
+                .Where(p => ids.Contains(p.Id))
+                .ToArrayAsync(cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public async Task<PaginationQueryResult<Product>> PaginateAsync(
             PaginationQuery paging,
             CancellationToken cancellationToken = default)
@@ -66,7 +74,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
         public async Task<PaginationQueryResult<Product>> SearchPaginatedByCategoryNameAsync(
             string categoryName,
             PaginationQuery paging,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             return await _context.Products
                 .AsNoTracking()
