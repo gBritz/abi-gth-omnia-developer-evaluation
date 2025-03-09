@@ -13,7 +13,8 @@ public class CreateProductProfile : Profile
     /// </summary>
     public CreateProductProfile()
     {
-        CreateMap<CreateProductCommand, Product>();
+        CreateMap<CreateProductCommand, Product>()
+            .ForMember(_ => _.StockQuantity, mce => mce.MapFrom(_ => _.Quantity));
         CreateMap<Product, ProductResult>();
     }
 }
