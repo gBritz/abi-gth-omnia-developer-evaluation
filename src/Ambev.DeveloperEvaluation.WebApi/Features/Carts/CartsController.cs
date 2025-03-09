@@ -20,6 +20,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[ProducesResponseType(typeof(ApiResponse), StatusCodes.Status401Unauthorized)]
 public class CartsController : BaseController
 {
     private readonly IMediator _mediator;
