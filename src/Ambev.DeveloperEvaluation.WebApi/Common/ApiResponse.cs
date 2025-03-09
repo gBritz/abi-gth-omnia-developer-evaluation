@@ -10,7 +10,20 @@ public class ApiResponse
     public IEnumerable<ValidationErrorDetail> Errors { get; set; } = [];
 
     public static ApiResponse CreateAsValidationError(string error, string detail) =>
-        CreateAsValidationError([
+        CreateError(ApiResponseErrorType.ValidationError, error, detail);
+
+    public static ApiResponse CreateAsValidationError(IEnumerable<ValidationErrorDetail> errors) =>
+        CreateError(ApiResponseErrorType.ValidationError, errors);
+
+    public static ApiResponse CreateAsNotFound(string error, string detail) =>
+        CreateError(ApiResponseErrorType.ResourceNotFound, error, detail);
+
+    public static ApiResponse CreateAsNotFound(string message = "Resource not found") =>
+        CreateError(ApiResponseErrorType.ResourceNotFound, message, string.Empty);
+
+    public static ApiResponse CreateError(ApiResponseErrorType type, string error, string detail) =>
+        CreateError(type,
+        [
             new()
             {
                 Error = error,
@@ -18,33 +31,11 @@ public class ApiResponse
             }
         ]);
 
-    public static ApiResponse CreateAsValidationError(IEnumerable<ValidationErrorDetail> errors) => new()
+    public static ApiResponse CreateError(ApiResponseErrorType type, IEnumerable<ValidationErrorDetail> errors) => new()
     {
         Success = false,
-        Type = ApiResponseErrorType.ValidationError.ToString(),
-        Message = "Validation Failed",
+        Type = type.ToString(),
+        Message = errors.FirstOrDefault()?.Error ?? "Validation Failed",
         Errors = errors,
-    };
-
-    public static ApiResponse CreateAsNotFound(string error, string detail) => new()
-    {
-        Success = false,
-        Type = ApiResponseErrorType.ResourceNotFound.ToString(),
-        Message = error,
-        Errors =
-        [
-            new()
-            {
-                Error = error,
-                Detail = detail,
-            },
-        ],
-    };
-
-    public static ApiResponse CreateAsNotFound(string message = "Resource not found") => new()
-    {
-        Success = false,
-        Type = ApiResponseErrorType.ResourceNotFound.ToString(),
-        Message = message,
     };
 }

@@ -11,22 +11,18 @@ internal sealed class ApiErrorsConventionHandler
     /// <summary>
     /// Occurs when not found resource by route.
     /// </summary>
-    private static readonly object ResourceNotFoundErrorResponse = new
-    {
-        Type = ApiResponseErrorType.ResourceNotFound.ToString(),
-        Error = "Uri not found",
-        Detail = "Endpoint does not exist",
-    };
+    private static readonly ApiResponse ResourceNotFoundErrorResponse = ApiResponse.CreateError(
+        ApiResponseErrorType.ResourceNotFound,
+        "Uri not found",
+        "Endpoint does not exist");
 
     /// <summary>
     /// Occurs when authentication failed.
     /// </summary>
-    private static readonly object AuthenticationErrorResponse = new
-    {
-        Type = ApiResponseErrorType.AuthenticationError.ToString(),
-        Error = "Invalid authentication token",
-        Detail = "The provided authentication token has expired or is invalid",
-    };
+    private static readonly ApiResponse AuthenticationErrorResponse = ApiResponse.CreateError(
+        ApiResponseErrorType.AuthenticationError,
+        "Invalid authentication token",
+        "The provided authentication token has expired or is invalid");
 
     /// <summary>
     /// Handle bad request when is invalid mvc model validation.
@@ -36,12 +32,9 @@ internal sealed class ApiErrorsConventionHandler
     public static IActionResult HandleBadRequestOnInvalidModelValidation(ActionContext context)
     {
         var error = context.ModelState.FirstOrDefault(_ => _.Key.StartsWith('$'), context.ModelState.FirstOrDefault());
-        var problemDetails = new
-        {
-            Type = ApiResponseErrorType.ValidationError.ToString(),
-            Error = "Invalid input data",
-            Detail = error.Value?.Errors.Select(e => e.ErrorMessage).FirstOrDefault() ?? "Error",
-        };
+        var problemDetails = ApiResponse.CreateAsValidationError(
+            "Invalid input data",
+            error.Value?.Errors.Select(e => e.ErrorMessage).FirstOrDefault() ?? "Error");
 
         return new BadRequestObjectResult(problemDetails);
     }
