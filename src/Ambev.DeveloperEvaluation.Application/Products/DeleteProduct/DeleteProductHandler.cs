@@ -1,7 +1,9 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Exceptions;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using FluentValidation;
 using MediatR;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Ambev.DeveloperEvaluation.Application.Products.DeleteProduct;
 
@@ -41,16 +43,10 @@ public class DeleteProductHandler : IRequestHandler<DeleteProductCommand, Delete
             throw new ValidationException(validationResult.Errors);
 
         _productRepository.Delete(request.Id);
-
         var success = (await _unitOfWork.ApplyChangesAsync(cancellationToken)) > 0;
 
         if (!success)
-        {
-            throw new ValidationException(
-            [
-                new(string.Empty, $"Product with ID {request.Id} not found."),
-            ]);
-        }
+            throw new NotFoundDomainException(BusinessRuleMessages.ProductNotFound(request.Id));
 
         return new DeleteProductResponse { Success = true };
     }
