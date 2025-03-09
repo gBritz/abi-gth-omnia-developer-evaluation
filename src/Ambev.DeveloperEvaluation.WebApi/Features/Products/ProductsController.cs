@@ -115,10 +115,12 @@ public class ProductsController : BaseController
     [HttpPut("{id}")]
     [ProducesResponseType(typeof(ApiResponseWithData<ProductResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] UpdateProductRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateProduct(
+        [FromRoute] Guid id,
+        [FromBody] UpdateProductRequest request,
+        CancellationToken cancellationToken)
     {
-        if (id != request.Id)
-            return BadRequest("The request id is different from the url");
+        request.WithId(id);
 
         var validator = new UpdateProductRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);

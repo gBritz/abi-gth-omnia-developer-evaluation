@@ -10,7 +10,7 @@ public class UpdateProductRequest
     /// <summary>
     /// The unique identifier of the product to update.
     /// </summary>
-    public Guid Id { get; set; }
+    public Guid Id { get; private set; }
 
     /// <summary>
     /// Gets the product's title. Must be unique and contain only valid characters.
@@ -41,4 +41,15 @@ public class UpdateProductRequest
     /// Gets the product's category name.
     /// </summary>
     public string Category { get; set; } = default!;
+
+    /// <summary>
+    /// Associate id to request.
+    /// </summary>
+    /// <param name="id">Identifier</param>
+    /// <returns>Instance <see cref="UpdateProductRequest"/> of request.</returns>
+    public UpdateProductRequest WithId(Guid id)
+    {
+        Id = id;
+        return this;
+    }
 }
