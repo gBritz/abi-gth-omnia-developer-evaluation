@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Repositories;
+using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
@@ -18,6 +19,7 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CartResult>
     private readonly ICartRepository _cartRepository;
     private readonly IUserRepository _userRepository;
     private readonly IProductRepository _productRepository;
+    private readonly ICurrentUserAccessor _currentUserAccessor;
     private readonly SaleDiscountService _saleDiscountService;
     private readonly SaleRandomNumberGeneratorService _saleNumberGenerator;
     private readonly SaleLimitReachedSpecification _saleLimitReachedSpecification;
@@ -30,6 +32,7 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CartResult>
     /// <param name="cartRepository">The cart repository</param>
     /// <param name="userRepository">The user repository</param>
     /// <param name="productRepository">The product repository</param>
+    /// <param name="currentUserAccessor">Accessor to current user of system</param>
     /// <param name="saleDiscountService">Service to apply discounts</param>
     /// <param name="saleNumberGenerator">Service to generate sale number</param>
     /// <param name="saleLimitReachedSpecification">Specification to validate if sale limit was reached</param>
@@ -39,6 +42,7 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CartResult>
         ICartRepository cartRepository,
         IUserRepository userRepository,
         IProductRepository productRepository,
+        ICurrentUserAccessor currentUserAccessor,
         SaleDiscountService saleDiscountService,
         SaleRandomNumberGeneratorService saleNumberGenerator,
         SaleLimitReachedSpecification saleLimitReachedSpecification,
@@ -48,6 +52,7 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CartResult>
         _cartRepository = cartRepository;
         _userRepository = userRepository;
         _productRepository = productRepository;
+        _currentUserAccessor = currentUserAccessor;
         _saleDiscountService = saleDiscountService;
         _saleNumberGenerator = saleNumberGenerator;
         _saleLimitReachedSpecification = saleLimitReachedSpecification;
@@ -69,9 +74,9 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CartResult>
         if (!validationResult.IsValid)
             throw new ValidationException(validationResult.Errors);
 
-        // TODO: obter da authenticação.
-        var loggedUser = await _userRepository.GetByIdAsync(new Guid("c2a03e75-c2e6-40d0-a2f5-105e9610bde6"), cancellationToken);
-        if (loggedUser is null || loggedUser.Status is not UserStatus.Active)
+        var currentUserInfo = _currentUserAccessor.GetCurrentUser();
+        var currentUser = await _userRepository.GetByIdAsync(currentUserInfo.Id, cancellationToken);
+        if (currentUser is null || currentUser.Status is not UserStatus.Active)
         {
             throw new ValidationException(
             [
@@ -93,11 +98,11 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CartResult>
             SaleNumber = _saleNumberGenerator.GenerateNext(),
             SoldAt = command.Date,
             StoreName = command.Branch,
-            CreatedBy = loggedUser,
+            CreatedBy = currentUser,
             BoughtBy = customerUser,
         };
 
-        var cartItems = await CreateItemsAsync(command, loggedUser, cancellationToken);
+        var cartItems = await CreateItemsAsync(command, currentUser, cancellationToken);
 
         cart.AddItems(cartItems.ToArray()); // TODO: tratar quando ocorrer de gerar estoque negativo... DomainException
 
