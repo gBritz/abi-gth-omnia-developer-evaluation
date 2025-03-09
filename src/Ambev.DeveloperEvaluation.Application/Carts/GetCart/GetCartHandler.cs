@@ -1,7 +1,9 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Repositories;
+﻿using Ambev.DeveloperEvaluation.Domain.Exceptions;
+using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
 using FluentValidation;
 using MediatR;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Ambev.DeveloperEvaluation.Application.Carts.GetCart;
 
@@ -44,10 +46,7 @@ public class GetCartHandler : IRequestHandler<GetCartCommand, CartResult>
         var cart = await _cartRepository.GetByIdAsync(request.Id, cancellationToken);
         if (cart is null)
         {
-            throw new ValidationException(
-            [
-                new(string.Empty, $"Cart with ID {request.Id} was not found."),
-            ]);
+            throw new NotFoundDomainException(BusinessRuleMessages.CardNotFound(request.Id));
         }
 
         return _mapper.Map<CartResult>(cart);

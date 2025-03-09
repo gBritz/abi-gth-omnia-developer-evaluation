@@ -2,6 +2,7 @@
 using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Validation;
 using Ambev.DeveloperEvaluation.Domain.ValueObjects;
+using Serilog;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
@@ -114,7 +115,8 @@ public class Product : BaseEntity
 
         if (StockQuantity < 0)
         {
-            throw new DomainException($"Stock quantity must not be negative #{Id}, current stock: {StockQuantity}, try to decrease {quantity}");
+            Log.Error("Stock quantity must not be negative in product#{Id} '{Title}', current stock: {StockQuantity}, try to decrease {quantity}.");
+            throw new DomainException($"Stock quantity must not be negative in product '{Title}'.");
         }
 
         UpdatedAt = DateTime.UtcNow;

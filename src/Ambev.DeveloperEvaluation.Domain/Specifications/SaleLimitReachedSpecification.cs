@@ -9,6 +9,8 @@ public class SaleLimitReachedSpecification : ISpecification<Cart>
 {
     private readonly int _maximumItemsPerProduct = 20; // TODO: deixar configurável
 
+    public int MaximumItemsPerProduct => _maximumItemsPerProduct;
+
     public bool IsSatisfiedBy(Cart cart)
     {
         return cart.Items

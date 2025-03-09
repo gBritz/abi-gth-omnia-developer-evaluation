@@ -1,4 +1,5 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Repositories;
+using Ambev.DeveloperEvaluation.Domain.Exceptions;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using FluentValidation;
 using MediatR;
@@ -46,10 +47,7 @@ public class DeleteCartHandler : IRequestHandler<DeleteCartCommand, DeleteCartRe
 
         if (!success)
         {
-            throw new ValidationException(
-            [
-                new(string.Empty, $"Cart with ID {request.Id} was not found."),
-            ]);
+            throw new NotFoundDomainException(BusinessRuleMessages.CardNotFound(request.Id));
         }
 
         return new DeleteCartResponse { Success = true };

@@ -2,6 +2,7 @@
 using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Enums;
+using Ambev.DeveloperEvaluation.Domain.Exceptions;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Services;
 using Ambev.DeveloperEvaluation.Domain.Specifications;
@@ -78,19 +79,13 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CartResult>
         var currentUser = await _userRepository.GetByIdAsync(currentUserInfo.Id, cancellationToken);
         if (currentUser is null || currentUser.Status is not UserStatus.Active)
         {
-            throw new ValidationException(
-            [
-                new(nameof(command.UserId), "Not found user."),
-            ]);
+            throw new NotFoundDomainException(BusinessRuleMessages.UserNotFound(currentUserInfo.Id));
         }
 
         var customerUser = await _userRepository.GetByIdAsync(command.UserId, cancellationToken);
         if (customerUser is null || customerUser.Status is not UserStatus.Active)
         {
-            throw new ValidationException(
-            [
-                new(nameof(command.UserId), "Not found user."),
-            ]);
+            throw new NotFoundDomainException(BusinessRuleMessages.UserNotFound(command.UserId));
         }
 
         Cart cart = new()
@@ -108,7 +103,7 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CartResult>
 
         if (_saleLimitReachedSpecification.IsSatisfiedBy(cart))
         {
-            throw new DomainException("Cannot sell more than 20 items per product.");
+            throw new DomainException(BusinessRuleMessages.ProductSaleLimitReached(_saleLimitReachedSpecification.MaximumItemsPerProduct).Detail);
         }
 
         _saleDiscountService.ApplyDiscounts(cart);
@@ -140,14 +135,9 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CartResult>
         if (products.Count != productIds.Length)
         {
             var missingProductIds = productIds
-                .Where(id => !products.Any(p => p.Id == id))
-                .Select(id => id.ToString())
-                .Aggregate((id1, id2) => $"#{id1}, #{id2}");
+                .Where(id => !products.Any(p => p.Id == id));
 
-            throw new ValidationException(
-            [
-                new(nameof(CreateCartItem.ProductId), $"Not found products: {missingProductIds}"),
-            ]);
+            throw new NotFoundDomainException(BusinessRuleMessages.ProductsNotFound(missingProductIds));
         }
 
         return
