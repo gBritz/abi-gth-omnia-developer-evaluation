@@ -33,6 +33,11 @@ public class UpdateProductRequest
     public string Image { get; set; } = default!;
 
     /// <summary>
+    /// Gets the stock quantity
+    /// </summary>
+    public int Quantity { get; set; }
+
+    /// <summary>
     /// Gets the product's rating.
     /// </summary>
     public Rating Rating { get; set; } = default!;
