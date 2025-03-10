@@ -117,30 +117,9 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CartResult>
 
         await _unitOfWork.ApplyChangesAsync(cancellationToken);
 
-        await _eventNotifier.NotifyAsync(CreateEventFrom(cart));
+        await _eventNotifier.NotifyAsync(SaleCreatedEvent.CreateFrom(cart));
 
         return _mapper.Map<CartResult>(cart);
-    }
-
-    private static SaleCreatedEvent CreateEventFrom(Cart cart)
-    {
-        return new SaleCreatedEvent
-        {
-            CartId = cart.Id,
-            CustomerId = cart.BoughtById,
-            CustomerName = cart.BoughtBy.Username,
-            TotalProducts = cart.Items.Count,
-            TotalAmount = cart.TotalSaleAmount,
-            Products = cart.Items.Select(i => new SaleCreatedEvent.SaleProduct
-            {
-                ProductId = i.ProductId,
-                Title = i.Product.Title,
-                Price = i.Product.Price,
-                DiscountAmount = i.DiscountAmount,
-                DiscountPercent = i.DiscountPercentage,
-                TotalAmount = i.TotalAmount,
-            }).ToArray()
-        };
     }
 
     private async Task<IEnumerable<CartItem>> CreateItemsAsync(

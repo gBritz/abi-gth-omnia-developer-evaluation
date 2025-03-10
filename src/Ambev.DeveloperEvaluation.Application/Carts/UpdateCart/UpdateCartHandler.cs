@@ -109,7 +109,7 @@ public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, CartResult>
 
         await _unitOfWork.ApplyChangesAsync(cancellationToken);
 
-        await _eventNotifier.NotifyAsync(CreateEventFrom(cart));
+        await _eventNotifier.NotifyAsync(SaleModifiedEvent.CreateFrom(cart));
 
         return _mapper.Map<CartResult>(cart);
     }
@@ -136,27 +136,6 @@ public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, CartResult>
             .Where(i => !cart.Items.Any(ci => ci.ProductId == i.ProductId))
             .ToArray();
         cart.AddItems(newItems); // TODO: tratar quando ocorrer de gerar estoque negativo... DomainException
-    }
-
-    private static SaleModifiedEvent CreateEventFrom(Cart cart)
-    {
-        return new SaleModifiedEvent
-        {
-            CartId = cart.Id,
-            CustomerId = cart.BoughtById,
-            CustomerName = cart.BoughtBy.Username,
-            TotalProducts = cart.Items.Count,
-            TotalAmount = cart.TotalSaleAmount,
-            Products = cart.Items.Select(i => new SaleModifiedEvent.SaleProduct
-            {
-                ProductId = i.ProductId,
-                Title = i.Product.Title,
-                Price = i.Product.Price,
-                DiscountAmount = i.DiscountAmount,
-                DiscountPercent = i.DiscountPercentage,
-                TotalAmount = i.TotalAmount,
-            }).ToArray()
-        };
     }
 
     private async Task<IEnumerable<CartItem>> CreateItemsAsync(
