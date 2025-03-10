@@ -1,4 +1,6 @@
-﻿using Ambev.DeveloperEvaluation.Domain.Repositories;
+﻿using Ambev.DeveloperEvaluation.Application.Common.Mapper;
+using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Repositories;
 using AutoMapper;
 using MediatR;
 
@@ -33,7 +35,12 @@ public class PaginateCartsHandler : IRequestHandler<PaginateCartsCommand, Pagina
     /// <returns>The product details if found</returns>
     public async Task<PaginateCartsResult> Handle(PaginateCartsCommand request, CancellationToken cancellationToken)
     {
-        var paginationResult = await _cartRepository.PaginateAsync(request, cancellationToken);
+        // note: maps fields from the DTO result to the domain, with names mapped accordingly using AutoMapper.
+        var paging = _mapper.MapFrom(request, [
+            new(typeof(Cart), typeof(CartResult)),
+            new(typeof(CartItem), typeof(CartItemResult))]);
+
+        var paginationResult = await _cartRepository.PaginateAsync(paging, cancellationToken);
         return _mapper.Map<PaginateCartsResult>(paginationResult);
     }
 }
