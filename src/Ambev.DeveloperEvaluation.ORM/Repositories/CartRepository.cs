@@ -4,6 +4,7 @@ using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.ORM.Extensions;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Ambev.DeveloperEvaluation.ORM.Repositories
 {
@@ -51,9 +52,15 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
             PaginationQuery paging,
             CancellationToken cancellationToken = default)
         {
+            Expression<Func<Cart, IEnumerable<CartItem>>> itemsNotDeleted = p => p.Items.Where(i => i.PurchaseStatus != PurchaseStatus.Deleted);
+
+            // note: ordering is applied only to the items of the cart. Other orderings should be done manually and used in the Include method.
+            var sortsByRelatedItems = paging.Orders.Where(s => s.Key.StartsWith(nameof(Cart.Items) + '.', StringComparison.OrdinalIgnoreCase));
+            itemsNotDeleted = itemsNotDeleted.RewriteExpressionWithOrderBy(sortsByRelatedItems);
+
             return await _context.Carts
                 .AsNoTracking()
-                .Include(p => p.Items.Where(i => i.PurchaseStatus != PurchaseStatus.Deleted))
+                .Include(itemsNotDeleted)
                 .Where(c => c.PurchaseStatus != PurchaseStatus.Deleted)
                 .ToPaginateAsync(paging, cancellationToken);
         }
