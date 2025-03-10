@@ -61,7 +61,7 @@ public class DeleteCartHandler : IRequestHandler<DeleteCartCommand, DeleteCartRe
         if (currentUser is null || currentUser.Status is not UserStatus.Active)
             throw new NotFoundDomainException(BusinessRuleMessages.UserNotFound(currentUserInfo.Id));
 
-        var cart = await _cartRepository.GetByIdAsync(command.Id, cancellationToken);
+        var cart = await _cartRepository.GetByIdWithActiveItemsAsync(command.Id, cancellationToken);
         if (cart is null)
             throw new NotFoundDomainException(BusinessRuleMessages.CardNotFound(command.Id));
 

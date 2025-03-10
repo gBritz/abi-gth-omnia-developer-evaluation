@@ -90,7 +90,7 @@ public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, CartResult>
             throw new NotFoundDomainException(BusinessRuleMessages.UserNotFound(command.UserId));
         }
 
-        var cart = await _cartRepository.GetByIdAsync(command.Id, cancellationToken);
+        var cart = await _cartRepository.GetByIdWithActiveItemsAsync(command.Id, cancellationToken);
         if (cart is null)
         {
             throw new NotFoundDomainException(BusinessRuleMessages.CardNotFound(command.Id));
