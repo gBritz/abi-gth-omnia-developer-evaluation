@@ -87,6 +87,11 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         public virtual ICollection<CartItem> Items { get; private set; } = new List<CartItem>();
 
         /// <summary>
+        /// Indicates if can be cancel cart.
+        /// </summary>
+        public bool CanBeCancel => PurchaseStatus is not PurchaseStatus.Cancelled;
+
+        /// <summary>
         /// Adding new product item and quantity to the cart.
         /// </summary>
         /// <param name="items">Adding items of cart.</param>
@@ -104,7 +109,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         }
 
         /// <summary>
-        /// Cancellation a cart.
+        /// Cancel the cart.
         /// </summary>
         /// <param name="cancelledBy">User who cancelled the cart.</param>
         public void Cancel(User cancelledBy)
@@ -115,6 +120,11 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             CancelledAt = DateTime.UtcNow;
             CancelledBy = cancelledBy;
             UpdatedAt = DateTime.UtcNow;
+
+            foreach (var item in Items)
+            {
+                item.Product.IncreaseQuantity(item.Quantity);
+            }
         }
 
         /// <summary>
