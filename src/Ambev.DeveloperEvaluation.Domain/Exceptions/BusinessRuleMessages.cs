@@ -9,6 +9,7 @@ public sealed class BusinessRuleMessages
     public static readonly Func<string, RuleMessage> UserEmailExists = email => new("User e-mail exists", $"User with email {email} already exists");
 
     public static readonly Func<Guid, RuleMessage> CardNotFound = id => new("Cart not found", $"The cart with ID {id} does not exist in our database");
+    public static readonly Func<Guid, RuleMessage> CardCannotBeCancel = id => new("Cart can´t cancel", $"Cart #{id} cannot be cancel");
 
     public static readonly Func<Guid, RuleMessage> ProductNotFound = id => new("Product not found", $"The product with ID {id} does not exist in our database");
     public static readonly Func<IEnumerable<Guid>, RuleMessage> ProductsNotFound = ids => new("Products are not found", $"The products with IDs {string.Join(", ", ids.Select(_ => _.ToString()))} does not exists in our database");

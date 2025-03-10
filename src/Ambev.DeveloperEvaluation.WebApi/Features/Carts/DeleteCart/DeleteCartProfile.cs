@@ -1,5 +1,4 @@
-using Ambev.DeveloperEvaluation.Application.Products.DeleteProduct;
-using Ambev.DeveloperEvaluation.WebApi.Features.Products.DeleteProduct;
+using Ambev.DeveloperEvaluation.Application.Carts.DeleteCart;
 using AutoMapper;
 
 namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts.DeleteCart;
@@ -14,6 +13,6 @@ public class DeleteCartProfile : Profile
     /// </summary>
     public DeleteCartProfile()
     {
-        CreateMap<DeleteProductRequest, DeleteProductCommand>();
+        CreateMap<DeleteCartRequest, DeleteCartCommand>();
     }
 }
