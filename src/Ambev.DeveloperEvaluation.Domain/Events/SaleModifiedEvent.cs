@@ -23,7 +23,7 @@ public class SaleModifiedEvent
             CustomerName = cart.BoughtBy.Username,
             TotalProducts = cart.Items.Count,
             TotalAmount = cart.TotalSaleAmount,
-            Products = cart.Items.Select(i => new SaleProduct
+            Products = cart.ActiveItems.Select(i => new SaleProduct
             {
                 ProductId = i.ProductId,
                 Title = i.Product.Title,

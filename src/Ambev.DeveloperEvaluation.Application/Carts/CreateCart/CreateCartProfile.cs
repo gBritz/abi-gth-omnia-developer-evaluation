@@ -18,9 +18,10 @@ public class CreateCartProfile : Profile
             .ForMember(_ => _.UserId, mce => mce.MapFrom(_ => _.BoughtById))
             .ForMember(_ => _.Date, mce => mce.MapFrom(_ => _.SoldAt))
             .ForMember(_ => _.Branch, mce => mce.MapFrom(_ => _.StoreName))
-            .ForMember(_ => _.IsCancelled, mce => mce.MapFrom((c, r) => c.PurchaseStatus is PurchaseStatus.Cancelled))
+            .ForMember(_ => _.Cancelled, mce => mce.MapFrom((c, r) => c.PurchaseStatus is PurchaseStatus.Cancelled))
             .ForMember(_ => _.Products, mce => mce.MapFrom(_ => _.Items));
 
-        CreateMap<CartItem, CartItemResult>();
+        CreateMap<CartItem, CartItemResult>()
+            .ForMember(_ => _.Cancelled, mce => mce.MapFrom((c, r) => c.PurchaseStatus is PurchaseStatus.Cancelled));
     }
 }

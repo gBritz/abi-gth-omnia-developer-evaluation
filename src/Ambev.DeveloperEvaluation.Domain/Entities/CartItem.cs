@@ -74,6 +74,11 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         public DateTime? CancelledAt { get; private set; }
 
         /// <summary>
+        /// Gets the date and time when was deleted the cart.
+        /// </summary>
+        public DateTime? DeletedAt { get; private set; }
+
+        /// <summary>
         /// Gets identifier of product.
         /// </summary>
         public Guid ProductId { get; private set; }
@@ -92,6 +97,11 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         /// Gets a user who cancelled the cart.
         /// </summary>
         public virtual User? CancelledBy { get; set; }
+
+        /// <summary>
+        /// Gets a user who deleted the cart.
+        /// </summary>
+        public virtual User? DeletedBy { get; set; }
 
         /// <summary>
         /// Create cart item for product.
@@ -172,6 +182,22 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
 
             RefreshTotalAmount();
+        }
+
+        /// <summary>
+        /// Delete a item of cart.
+        /// </summary>
+        /// <param name="deletedBy">User that deleted item of cart</param>
+        internal void Delete(User deletedBy)
+        {
+            ArgumentNullException.ThrowIfNull(deletedBy, nameof(deletedBy));
+
+            Cancel(deletedBy);
+
+            PurchaseStatus = PurchaseStatus.Deleted;
+            DeletedAt = DateTime.UtcNow;
+            DeletedBy = deletedBy;
+            Product.IncreaseQuantity(Quantity);
         }
 
         /// <summary>

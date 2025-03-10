@@ -46,7 +46,7 @@ public class CartResponse
     /// <remarks>
     /// True is cancelled, false otherwise.
     /// </remarks>
-    public bool IsCancelled { get; init; }
+    public bool Cancelled { get; init; }
 
     /// <summary>
     /// Gets products in the cart.
