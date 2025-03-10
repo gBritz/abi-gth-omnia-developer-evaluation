@@ -15,12 +15,6 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories
         void Create(Cart cart);
 
         /// <summary>
-        /// Deletes a cart from the repository.
-        /// </summary>
-        /// <param name="id">The unique identifier of the cart to delete</param>
-        void Delete(Guid id);
-
-        /// <summary>
         /// Retrieves a cart by their unique identifier.
         /// </summary>
         /// <param name="id">The unique identifier of the cart</param>

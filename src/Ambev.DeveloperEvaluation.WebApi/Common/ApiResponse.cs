@@ -5,7 +5,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Common;
 public class ApiResponse
 {
     public bool Success { get; set; }
-    public string Type { get; private set; } = ApiResponseErrorType.ValidationError.ToString();
+    public string Type { get; private set; } = ApiResponseErrorType.None.ToString();
     public string Message { get; set; } = string.Empty;
     public IEnumerable<ValidationErrorDetail> Errors { get; set; } = [];
 

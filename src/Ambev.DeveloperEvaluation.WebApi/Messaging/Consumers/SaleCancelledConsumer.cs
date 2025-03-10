@@ -8,7 +8,7 @@ public class SaleCancelledConsumer : IHandleMessages<SaleCancelledEvent>
 {
     private readonly ILogger _logger;
 
-    public SaleCancelledConsumer(ILogger<SaleModifiedConsumer> logger)
+    public SaleCancelledConsumer(ILogger<SaleCancelledConsumer> logger)
     {
         _logger = logger;
     }

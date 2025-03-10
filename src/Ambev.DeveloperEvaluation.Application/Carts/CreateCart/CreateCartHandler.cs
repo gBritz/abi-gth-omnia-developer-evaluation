@@ -104,7 +104,7 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CartResult>
 
         var cartItems = await CreateItemsAsync(command, currentUser, cancellationToken);
 
-        cart.AddItems(cartItems.ToArray()); // TODO: tratar quando ocorrer de gerar estoque negativo... DomainException
+        cart.AddItems(cartItems.ToArray());
 
         if (_saleLimitReachedSpecification.IsSatisfiedBy(cart))
         {

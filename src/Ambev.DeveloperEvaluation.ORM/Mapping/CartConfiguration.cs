@@ -23,10 +23,12 @@ internal class CartConfiguration : IEntityTypeConfiguration<Cart>
         builder.Property(_ => _.CreatedAt).IsRequired();
         builder.Property(_ => _.UpdatedAt).IsRequired(false);
         builder.Property(_ => _.CancelledAt).IsRequired(false);
+        builder.Property(_ => _.DeletedAt).IsRequired(false);
 
         builder.HasOneAsShadow(_ => _.CreatedBy);
         builder.HasOneAsShadow(_ => _.BoughtBy);
         builder.HasOneAsShadow(_ => _.CancelledBy, required: false);
+        builder.HasOneAsShadow(_ => _.DeletedBy, required: false);
 
         builder.HasMany(_ => _.Items)
             .WithOne()
