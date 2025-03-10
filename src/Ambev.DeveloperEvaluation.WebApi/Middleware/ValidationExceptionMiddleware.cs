@@ -1,4 +1,5 @@
-﻿using Ambev.DeveloperEvaluation.Common.Validation;
+﻿using Ambev.DeveloperEvaluation.Application.Common.Mapper;
+using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Exceptions;
 using Ambev.DeveloperEvaluation.WebApi.Common;
 using FluentValidation;
@@ -34,6 +35,16 @@ namespace Ambev.DeveloperEvaluation.WebApi.Middleware
             catch (DomainException ex)
             {
                 var response = ApiResponse.CreateAsValidationError("Bussines rules failure", ex.Message);
+                await WriteResponseAsync(context, response);
+            }
+            catch (MapperNotFoundPropertyException ex)
+            {
+                var response = ApiResponse.CreateAsValidationError("Validation Failed", ex.Message);
+                await WriteResponseAsync(context, response);
+            }
+            catch (Exception ex)
+            {
+                var response = ApiResponse.CreateAsValidationError("Internal error", "Occurs error, try again.");
                 await WriteResponseAsync(context, response);
             }
         }
