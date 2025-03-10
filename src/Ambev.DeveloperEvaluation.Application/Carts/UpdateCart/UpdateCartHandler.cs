@@ -3,6 +3,7 @@ using Ambev.DeveloperEvaluation.Common.Repositories;
 using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Enums;
+using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.Domain.Exceptions;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Services;
@@ -24,6 +25,7 @@ public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, CartResult>
     private readonly ICurrentUserAccessor _currentUserAccessor;
     private readonly SaleDiscountService _saleDiscountService;
     private readonly SaleLimitReachedSpecification _saleLimitReachedSpecification;
+    private readonly IEventNotification _eventNotifier;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
@@ -36,6 +38,7 @@ public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, CartResult>
     /// <param name="currentUserAccessor">Accessor to current user of system</param>
     /// <param name="saleDiscountService">Service to apply discounts</param>
     /// <param name="saleLimitReachedSpecification">Specification to validate if sale limit was reached</param>
+    /// <param name="eventNotifier">Notifier of events</param>
     /// <param name="unitOfWork">Unit of work.</param>
     /// <param name="mapper">The AutoMapper instance</param>
     public UpdateCartHandler(
@@ -45,6 +48,7 @@ public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, CartResult>
         ICurrentUserAccessor currentUserAccessor,
         SaleDiscountService saleDiscountService,
         SaleLimitReachedSpecification saleLimitReachedSpecification,
+        IEventNotification eventNotifier,
         IUnitOfWork unitOfWork,
         IMapper mapper)
     {
@@ -54,6 +58,7 @@ public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, CartResult>
         _currentUserAccessor = currentUserAccessor;
         _saleDiscountService = saleDiscountService;
         _saleLimitReachedSpecification = saleLimitReachedSpecification;
+        _eventNotifier = eventNotifier;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
@@ -103,6 +108,9 @@ public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, CartResult>
         _saleDiscountService.ApplyDiscounts(cart);
 
         await _unitOfWork.ApplyChangesAsync(cancellationToken);
+
+        await _eventNotifier.NotifyAsync(CreateEventFrom(cart));
+
         return _mapper.Map<CartResult>(cart);
     }
 
@@ -128,6 +136,27 @@ public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, CartResult>
             .Where(i => !cart.Items.Any(ci => ci.ProductId == i.ProductId))
             .ToArray();
         cart.AddItems(newItems); // TODO: tratar quando ocorrer de gerar estoque negativo... DomainException
+    }
+
+    private static SaleModifiedEvent CreateEventFrom(Cart cart)
+    {
+        return new SaleModifiedEvent
+        {
+            CartId = cart.Id,
+            CustomerId = cart.BoughtById,
+            CustomerName = cart.BoughtBy.Username,
+            TotalProducts = cart.Items.Count,
+            TotalAmount = cart.TotalSaleAmount,
+            Products = cart.Items.Select(i => new SaleModifiedEvent.SaleProduct
+            {
+                ProductId = i.ProductId,
+                Title = i.Product.Title,
+                Price = i.Product.Price,
+                DiscountAmount = i.DiscountAmount,
+                DiscountPercent = i.DiscountPercentage,
+                TotalAmount = i.TotalAmount,
+            }).ToArray()
+        };
     }
 
     private async Task<IEnumerable<CartItem>> CreateItemsAsync(
