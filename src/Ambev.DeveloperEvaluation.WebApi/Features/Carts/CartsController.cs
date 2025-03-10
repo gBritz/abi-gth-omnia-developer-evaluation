@@ -117,12 +117,11 @@ public class CartsController : BaseController
     [ProducesResponseType(typeof(ApiResponseWithData<CartResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateCart(
-        Guid id,
+        [FromRoute] Guid id,
         [FromBody] UpdateCartRequest request,
         CancellationToken cancellationToken)
     {
-        if (id != request.Id)
-            return BadRequest("The request id is different from the url");
+        request.WithId(id);
 
         var validator = new UpdateCartRequestValidator();
         var validationResult = await validator.ValidateAsync(request, cancellationToken);

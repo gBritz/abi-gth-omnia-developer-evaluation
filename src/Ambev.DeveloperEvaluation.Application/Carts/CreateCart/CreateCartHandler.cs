@@ -2,6 +2,7 @@
 using Ambev.DeveloperEvaluation.Common.Security;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Enums;
+using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.Domain.Exceptions;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Services;
@@ -24,6 +25,7 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CartResult>
     private readonly SaleDiscountService _saleDiscountService;
     private readonly SaleRandomNumberGeneratorService _saleNumberGenerator;
     private readonly SaleLimitReachedSpecification _saleLimitReachedSpecification;
+    private readonly IEventNotification _eventNotifier;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
 
@@ -37,6 +39,7 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CartResult>
     /// <param name="saleDiscountService">Service to apply discounts</param>
     /// <param name="saleNumberGenerator">Service to generate sale number</param>
     /// <param name="saleLimitReachedSpecification">Specification to validate if sale limit was reached</param>
+    /// <param name="eventNotifier">Notifier of events</param>
     /// <param name="unitOfWork">Unit of work.</param>
     /// <param name="mapper">The AutoMapper instance</param>
     public CreateCartHandler(
@@ -47,6 +50,7 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CartResult>
         SaleDiscountService saleDiscountService,
         SaleRandomNumberGeneratorService saleNumberGenerator,
         SaleLimitReachedSpecification saleLimitReachedSpecification,
+        IEventNotification eventNotifier,
         IUnitOfWork unitOfWork,
         IMapper mapper)
     {
@@ -57,6 +61,7 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CartResult>
         _saleDiscountService = saleDiscountService;
         _saleNumberGenerator = saleNumberGenerator;
         _saleLimitReachedSpecification = saleLimitReachedSpecification;
+        _eventNotifier = eventNotifier;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
     }
@@ -111,6 +116,8 @@ public class CreateCartHandler : IRequestHandler<CreateCartCommand, CartResult>
         _cartRepository.Create(cart);
 
         await _unitOfWork.ApplyChangesAsync(cancellationToken);
+
+        await _eventNotifier.NotifyAsync(SaleCreatedEvent.CreateFrom(cart));
 
         return _mapper.Map<CartResult>(cart);
     }
