@@ -7,6 +7,7 @@ using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using Ambev.DeveloperEvaluation.WebApi.Startups;
 using Microsoft.EntityFrameworkCore;
+using Rebus.Config;
 using Serilog;
 using System.Text.Json.Serialization;
 
@@ -51,6 +52,7 @@ public class Program
 
             builder.RegisterDependencies();
             builder.Services.RegisterWebApiServices();
+            builder.Services.AddRebusMessaging();
 
             var app = builder.Build();
 
@@ -71,6 +73,8 @@ public class Program
             app.UseBasicHealthChecks();
 
             app.MapControllers().RequireAuthorization();
+
+            app.Services.StartRebus();
 
             app.Run();
         }
