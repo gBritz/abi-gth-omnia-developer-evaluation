@@ -37,6 +37,16 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
         }
 
         /// <inheritdoc/>
+        public async Task<Cart?> GetByIdWithActiveItemsAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            return await _context.Carts
+                .Include(p => p.Items.Where(i => i.PurchaseStatus == PurchaseStatus.Created))
+                    .ThenInclude(i => i.Product)
+                .Where(c => c.PurchaseStatus != PurchaseStatus.Deleted)
+                .FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
+        }
+
+        /// <inheritdoc/>
         public async Task<PaginationQueryResult<Cart>> PaginateAsync(
             PaginationQuery paging,
             CancellationToken cancellationToken = default)

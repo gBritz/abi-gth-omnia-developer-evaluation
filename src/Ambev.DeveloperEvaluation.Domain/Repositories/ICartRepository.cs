@@ -23,6 +23,14 @@ namespace Ambev.DeveloperEvaluation.Domain.Repositories
         Task<Cart?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
         /// <summary>
+        /// Retrieves a cart by their unique identifier with active items.
+        /// </summary>
+        /// <param name="id">The unique identifier of the cart</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>The cart if found, null otherwise</returns>
+        Task<Cart?> GetByIdWithActiveItemsAsync(Guid id, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// Retrieves all paginated carts.
         /// </summary>
         /// <param name="paging">Info to paginate</param>

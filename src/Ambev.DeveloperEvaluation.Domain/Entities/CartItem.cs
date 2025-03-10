@@ -192,10 +192,12 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         {
             ArgumentNullException.ThrowIfNull(deletedBy, nameof(deletedBy));
 
+            Cancel(deletedBy);
+
             PurchaseStatus = PurchaseStatus.Deleted;
             DeletedAt = DateTime.UtcNow;
             DeletedBy = deletedBy;
-            Product.IncreaseQuantity(Quantity); ;
+            Product.IncreaseQuantity(Quantity);
         }
 
         /// <summary>

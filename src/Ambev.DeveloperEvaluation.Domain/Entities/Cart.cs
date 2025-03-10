@@ -97,6 +97,12 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         public virtual ICollection<CartItem> Items { get; private set; } = new List<CartItem>();
 
         /// <summary>
+        /// Gets list of active items.
+        /// </summary>
+        public IEnumerable<CartItem> ActiveItems =>
+            Items.Where(i => i.PurchaseStatus is not PurchaseStatus.Deleted);
+
+        /// <summary>
         /// Indicates if can be cancel cart.
         /// </summary>
         public bool CanBeCancel => PurchaseStatus is not PurchaseStatus.Cancelled;

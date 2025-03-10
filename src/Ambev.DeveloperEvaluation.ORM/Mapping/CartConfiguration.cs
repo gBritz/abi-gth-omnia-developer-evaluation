@@ -36,5 +36,7 @@ internal class CartConfiguration : IEntityTypeConfiguration<Cart>
 
         builder.HasIndex(_ => _.SaleNumber)
             .IsUnique();
+
+        builder.Ignore(_ => _.ActiveItems);
     }
 }
