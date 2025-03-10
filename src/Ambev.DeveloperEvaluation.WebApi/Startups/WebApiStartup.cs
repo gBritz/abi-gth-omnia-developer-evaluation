@@ -41,12 +41,14 @@ namespace Ambev.DeveloperEvaluation.WebApi.Startups
                 .Routing(r => r.TypeBased()
                     .Map<SaleCreatedEvent>("carts.sale.created")
                     .Map<SaleModifiedEvent>("carts.sale.modified")
-                    .Map<SaleCancelledEvent>("carts.sale.cancelled"))
+                    .Map<SaleCancelledEvent>("carts.sale.cancelled")
+                    .Map<ItemCancelledEvent>("carts.sale_item.cancelled"))
                 , onCreated: async bus =>
                 {
                     await bus.Subscribe<SaleCreatedEvent>();
                     await bus.Subscribe<SaleModifiedEvent>();
                     await bus.Subscribe<SaleCancelledEvent>();
+                    await bus.Subscribe<ItemCancelledEvent>();
                 }
             );
             services.AutoRegisterHandlersFromAssemblyOf<Program>();

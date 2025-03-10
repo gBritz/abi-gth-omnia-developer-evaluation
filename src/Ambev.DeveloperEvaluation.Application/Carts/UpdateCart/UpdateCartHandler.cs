@@ -90,15 +90,18 @@ public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, CartResult>
             throw new NotFoundDomainException(BusinessRuleMessages.UserNotFound(command.UserId));
         }
 
-        var cart = await _cartRepository.GetByIdAsync(command.Id, cancellationToken);
+        var cart = await _cartRepository.GetByIdWithActiveItemsAsync(command.Id, cancellationToken);
         if (cart is null)
         {
             throw new NotFoundDomainException(BusinessRuleMessages.CardNotFound(command.Id));
         }
 
+        if (!cart.CanBeEdited)
+            throw new NotFoundDomainException(BusinessRuleMessages.CardCannotBeEdited(command.Id));
+
         var cartItems = await CreateItemsAsync(command, currentUser, cancellationToken);
 
-        ChangeCart(cart, command, customerUser, cartItems);
+        ChangeCart(cart, command, customerUser, currentUser, cartItems);
 
         if (_saleLimitReachedSpecification.IsSatisfiedBy(cart))
         {
@@ -111,6 +114,11 @@ public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, CartResult>
 
         await _eventNotifier.NotifyAsync(SaleModifiedEvent.CreateFrom(cart));
 
+        if (cart.HasAnyDeletedItem)
+        {
+            await _eventNotifier.NotifyAsync(ItemCancelledEvent.CreateFrom(cart));
+        }
+
         return _mapper.Map<CartResult>(cart);
     }
 
@@ -118,6 +126,7 @@ public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, CartResult>
         Cart cart,
         UpdateCartCommand command,
         User customerUser,
+        User currentUser,
         IEnumerable<CartItem> cartItems)
     {
         cart.Change(customerUser, command.Date, command.Branch);
@@ -125,17 +134,17 @@ public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, CartResult>
         var itemsToRemove = cart.Items
             .Where(i => !cartItems.Any(ci => ci.ProductId == i.ProductId))
             .ToArray();
-        cart.RemoveItems(itemsToRemove);
+        cart.DeleteItems(currentUser, itemsToRemove);
 
         var existingItems = cartItems
             .Where(i => cart.Items.Any(ci => ci.ProductId == i.ProductId))
             .ToArray();
-        cart.UpdateItems(existingItems); // TODO: tratar quando ocorrer de gerar estoque negativo... DomainException
+        cart.UpdateItems(existingItems);
 
         var newItems = cartItems
             .Where(i => !cart.Items.Any(ci => ci.ProductId == i.ProductId))
             .ToArray();
-        cart.AddItems(newItems); // TODO: tratar quando ocorrer de gerar estoque negativo... DomainException
+        cart.AddItems(newItems);
     }
 
     private async Task<IEnumerable<CartItem>> CreateItemsAsync(

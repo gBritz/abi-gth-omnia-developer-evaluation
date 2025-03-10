@@ -1,5 +1,6 @@
 ﻿using Ambev.DeveloperEvaluation.Common.Repositories.Pagination;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Enums;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.ORM.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -26,26 +27,22 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
         }
 
         /// <inheritdoc/>
-        public void Delete(Guid id)
-        {
-            Cart cart = new()
-            {
-                Id = id,
-                SaleNumber = default,
-                SoldAt = default,
-                StoreName = default!,
-                CreatedBy = default!,
-                BoughtBy = default!,
-            };
-            _context.Carts.Attach(cart);
-            _context.Carts.Remove(cart);
-        }
-
-        /// <inheritdoc/>
         public async Task<Cart?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.Carts
-                .Include(p => p.Items).ThenInclude(i => i.Product)
+                .Include(p => p.Items.Where(i => i.PurchaseStatus != PurchaseStatus.Deleted))
+                    .ThenInclude(i => i.Product)
+                .Where(c => c.PurchaseStatus != PurchaseStatus.Deleted)
+                .FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public async Task<Cart?> GetByIdWithActiveItemsAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            return await _context.Carts
+                .Include(p => p.Items.Where(i => i.PurchaseStatus == PurchaseStatus.Created))
+                    .ThenInclude(i => i.Product)
+                .Where(c => c.PurchaseStatus != PurchaseStatus.Deleted)
                 .FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
         }
 
@@ -56,7 +53,8 @@ namespace Ambev.DeveloperEvaluation.ORM.Repositories
         {
             return await _context.Carts
                 .AsNoTracking()
-                .Include(p => p.Items)
+                .Include(p => p.Items.Where(i => i.PurchaseStatus != PurchaseStatus.Deleted))
+                .Where(c => c.PurchaseStatus != PurchaseStatus.Deleted)
                 .ToPaginateAsync(paging, cancellationToken);
         }
     }

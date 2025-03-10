@@ -72,7 +72,7 @@ public class Program
 
             app.UseBasicHealthChecks();
 
-            app.MapControllers().RequireAuthorization();
+            app.MapControllers();//.RequireAuthorization();
 
             app.Services.StartRebus();
 
