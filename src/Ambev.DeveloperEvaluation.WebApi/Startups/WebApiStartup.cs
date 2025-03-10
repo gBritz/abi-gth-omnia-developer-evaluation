@@ -40,11 +40,13 @@ namespace Ambev.DeveloperEvaluation.WebApi.Startups
                 .Transport(t => t.UseInMemoryTransport(new InMemNetwork(true), "carts_queue"))
                 .Routing(r => r.TypeBased()
                     .Map<SaleCreatedEvent>("carts.sale.created")
-                    .Map<SaleModifiedEvent>("carts.sale.modified"))
+                    .Map<SaleModifiedEvent>("carts.sale.modified")
+                    .Map<SaleCancelledEvent>("carts.sale.cancelled"))
                 , onCreated: async bus =>
                 {
                     await bus.Subscribe<SaleCreatedEvent>();
                     await bus.Subscribe<SaleModifiedEvent>();
+                    await bus.Subscribe<SaleCancelledEvent>();
                 }
             );
             services.AutoRegisterHandlersFromAssemblyOf<Program>();
