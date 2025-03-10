@@ -39,7 +39,9 @@ internal static class QueryableExtensions
     {
         IOrderedQueryable<T>? orderedQuery = null;
 
-        foreach (var order in orders)
+        var sortsWithoutNavigation = orders.Where(o => !o.Key.Contains('.'));
+
+        foreach (var order in sortsWithoutNavigation)
         {
             try
             {
@@ -62,6 +64,6 @@ internal static class QueryableExtensions
             }
         }
 
-        return orderedQuery is not null ? orderedQuery : queryable;
+        return orderedQuery is null ? queryable : orderedQuery;
     }
 }
