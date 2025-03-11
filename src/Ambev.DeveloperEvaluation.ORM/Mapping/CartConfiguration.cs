@@ -17,7 +17,11 @@ internal class CartConfiguration : IEntityTypeConfiguration<Cart>
         builder.Property(_ => _.SaleNumber).IsRequired();
         builder.Property(_ => _.TotalSaleAmount).IsRequired();
         builder.Property(_ => _.StoreName).IsRequired().HasMaxLength(100);
-        builder.Property(_ => _.PurchaseStatus).IsRequired();
+
+        builder.Property(u => u.PurchaseStatus)
+            .HasConversion<string>()
+            .HasMaxLength(20)
+            .IsRequired();
 
         builder.Property(_ => _.SoldAt).IsRequired().HasColumnName("SaleAt");
         builder.Property(_ => _.CreatedAt).IsRequired();
