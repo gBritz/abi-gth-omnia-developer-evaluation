@@ -15,6 +15,7 @@ branches:
   - development
   - feat/*
   - fix/*
+  - test/*
   - refactor/*
 
 before_build:
