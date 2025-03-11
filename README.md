@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/4ua0x7oxsqqfx6kq?svg=true)](https://ci.appveyor.com/project/Britz/abi-gth-omnia-developer-evaluation)
+
 # Developer Evaluation Project
 
 `READ CAREFULLY`
