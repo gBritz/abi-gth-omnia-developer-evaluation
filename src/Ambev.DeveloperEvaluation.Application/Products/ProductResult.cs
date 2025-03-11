@@ -40,5 +40,5 @@ public class ProductResult
     /// <summary>
     /// Gets the product's category name.
     /// </summary>
-    public string CategoryName { get; private set; } = default!;
+    public string CategoryName { get; set; } = default!;
 }
