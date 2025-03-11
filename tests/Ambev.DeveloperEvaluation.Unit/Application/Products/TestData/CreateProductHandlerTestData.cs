@@ -28,7 +28,12 @@ public static class CreateProductHandlerTestData
         .RuleFor(u => u.Description, f => f.Lorem.Sentences(2))
         .RuleFor(u => u.Image, f => f.Internet.Url())
         .RuleFor(u => u.Quantity, f => f.Random.Int(min: 200, max: 1000))
-        .RuleFor(p => p.CategoryName, f => f.Commerce.Categories(1).First());
+        .RuleFor(p => p.CategoryName, f => f.Commerce.Categories(1).First())
+        .RuleFor(p => p.Rating, f => new DeveloperEvaluation.Domain.ValueObjects.Rating
+        {
+            Rate = f.Random.Int(min: 0, max: 100),
+            Count = f.Random.Int(min: 0, max: 1000),
+        });
 
     /// <summary>
     /// Generates a valid Product entity with randomized data.

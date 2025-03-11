@@ -1,11 +1,11 @@
-﻿using Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
+﻿using Ambev.DeveloperEvaluation.Application.Products;
+using Ambev.DeveloperEvaluation.Application.Products.CreateProduct;
 using Ambev.DeveloperEvaluation.Common.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Services;
 using Ambev.DeveloperEvaluation.Unit.Application.Products.TestData;
 using AutoMapper;
-using Bogus;
 using FluentAssertions;
 using FluentValidation;
 using NSubstitute;
@@ -77,20 +77,36 @@ public class CreateProductHandlerTests
             .WithMessage($"Product with title {command.Title} already exists");
     }
 
-    /*
     /// <summary>
     /// Tests that an valid request when delete product should return true to indicates a success operation.
     /// </summary>
-    [Fact(DisplayName = "Given valid product identifier When delete product Then should return true to indicates a success operation")]
-    public async Task Handle_FoundProduct_Should_Removed_It()
+    [Fact(DisplayName = "Given valid product identifier When to create a product Then should return true to indicates a success operation")]
+    public async Task Handle_ValidRequest_Should_Returns_Success()
     {
         // Given
         var productId = Guid.NewGuid();
         var command = CreateProductHandlerTestData.GenerateValidCommand();
+
         _unitOfWork.ApplyChangesAsync(Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(1));
         _mapper.Map<Product>(Arg.Any<CreateProductCommand>())
             .Returns(CreateProductHandlerTestData.GenerateValidProductByCommand(command));
+        _mapper.Map<ProductResult>(Arg.Any<Product>())
+            .Returns(new ProductResult
+            {
+                Id = productId,
+                Description = command.Description,
+                Image = command.Image,
+                Price = command.Price,
+                Rating = command.Rating,
+                Title = command.Title,
+                CategoryName = command.CategoryName,
+            });
+        _categoryRepository.GetByNameAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new Category
+            {
+                Name = command.CategoryName,
+            });
 
         // TODO cenário que não tem produto, cria lendo de GetByNameAsync.
 
@@ -99,7 +115,6 @@ public class CreateProductHandlerTests
 
         // Then
         result.Should().NotBeNull();
-        result.Success.Should().BeTrue();
+        result.Id.Should().Be(productId);
     }
-    */
 }
