@@ -1,4 +1,5 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/4ua0x7oxsqqfx6kq?svg=true)](https://ci.appveyor.com/project/Britz/abi-gth-omnia-developer-evaluation)
+[![codecov](https://codecov.io/gh/gBritz/abi-gth-omnia-developer-evaluation/graph/badge.svg?token=63H7JZ296O)](https://codecov.io/gh/gBritz/abi-gth-omnia-developer-evaluation)
 
 # Ambev Challenge - Shopping Cart Management API
 
