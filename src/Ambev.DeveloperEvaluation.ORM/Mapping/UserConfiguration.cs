@@ -1,11 +1,10 @@
 ﻿using Ambev.DeveloperEvaluation.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Text.RegularExpressions;
 
 namespace Ambev.DeveloperEvaluation.ORM.Mapping;
 
-public class UserConfiguration : IEntityTypeConfiguration<User>
+internal class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
@@ -29,5 +28,16 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasConversion<string>()
             .HasMaxLength(20);
 
+        builder.HasData(
+            new User
+            {
+                Id = Guid.NewGuid(),
+                Username = "admin",
+                Password = "12345zZ@",
+                Phone = "51981344567",
+                Email = "admin@gmail.com",
+                Status = Domain.Enums.UserStatus.Active,
+                Role = Domain.Enums.UserRole.Admin,
+            });
     }
 }

@@ -1,15 +1,15 @@
-using Ambev.DeveloperEvaluation.Application;
 using Ambev.DeveloperEvaluation.Common.HealthChecks;
 using Ambev.DeveloperEvaluation.Common.Logging;
 using Ambev.DeveloperEvaluation.Common.Security;
-using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.IoC;
 using Ambev.DeveloperEvaluation.ORM;
+using Ambev.DeveloperEvaluation.WebApi.Common;
 using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using Ambev.DeveloperEvaluation.WebApi.Startups;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Rebus.Config;
 using Serilog;
+using System.Text.Json.Serialization;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
 
@@ -22,9 +22,20 @@ public class Program
             Log.Information("Starting web application");
 
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-            builder.AddDefaultLogging();
+            builder.AddDefaultLogging();            
 
-            builder.Services.AddControllers();
+            builder.Services
+                .AddControllers()
+                .ConfigureApiBehaviorOptions(options =>
+                {
+                    options.InvalidModelStateResponseFactory = ApiErrorsConventionHandler.HandleBadRequestOnInvalidModelValidation;
+                })
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                });
+
             builder.Services.AddEndpointsApiExplorer();
 
             builder.AddBasicHealthChecks();
@@ -40,26 +51,18 @@ public class Program
             builder.Services.AddJwtAuthentication(builder.Configuration);
 
             builder.RegisterDependencies();
-
-            builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
-
-            builder.Services.AddMediatR(cfg =>
-            {
-                cfg.RegisterServicesFromAssemblies(
-                    typeof(ApplicationLayer).Assembly,
-                    typeof(Program).Assembly
-                );
-            });
-
-            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+            builder.Services.RegisterWebApiServices();
+            builder.Services.AddRebusMessaging();
 
             var app = builder.Build();
+
+            app.UseStatusCodePages(ApiErrorsConventionHandler.HandleByStatusCode);
+
             app.UseMiddleware<ValidationExceptionMiddleware>();
 
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();
@@ -69,7 +72,9 @@ public class Program
 
             app.UseBasicHealthChecks();
 
-            app.MapControllers().RequireAuthorization();
+            app.MapControllers();//.RequireAuthorization();
+
+            app.Services.StartRebus();
 
             app.Run();
         }

@@ -6,7 +6,6 @@ using Ambev.DeveloperEvaluation.Domain.Validation;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
 
-
 /// <summary>
 /// Represents a user in the system with authentication and profile information.
 /// This entity follows domain-driven design principles and includes business rules validation.
@@ -59,12 +58,6 @@ public class User : BaseEntity, IUser
     /// Gets the date and time of the last update to the user's information.
     /// </summary>
     public DateTime? UpdatedAt { get; set; }
-
-    /// <summary>
-    /// Gets the unique identifier of the user.
-    /// </summary>
-    /// <returns>The user's ID as a string.</returns>
-    string IUser.Id => Id.ToString();
 
     /// <summary>
     /// Gets the username.
