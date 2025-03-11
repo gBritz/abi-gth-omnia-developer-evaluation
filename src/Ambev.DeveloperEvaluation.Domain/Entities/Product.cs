@@ -109,7 +109,7 @@ public class Product : BaseEntity
     {
         if (quantity < 0)
         {
-            throw new ArgumentOutOfRangeException("Quantity must not be negative value to the change quantity.");
+            throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity must not be negative value to the change quantity.");
         }
 
         StockQuantity = quantity;
@@ -125,7 +125,7 @@ public class Product : BaseEntity
     {
         if (quantity <= 0)
         {
-            throw new ArgumentOutOfRangeException("Quantity must be positive value to the decrease quantity.");
+            throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity must be positive value to the decrease quantity.");
         }
 
         StockQuantity -= quantity;
@@ -148,7 +148,7 @@ public class Product : BaseEntity
     {
         if (quantity <= 0)
         {
-            throw new ArgumentOutOfRangeException("Quantity must be positive value to the increase quantity.");
+            throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity must be positive value to the increase quantity.");
         }
 
         StockQuantity += quantity;

@@ -119,17 +119,6 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             Items.Any(i => i.PurchaseStatus is PurchaseStatus.Deleted);
 
         /// <summary>
-        /// Give back the stock quantity to products.
-        /// </summary>
-        private void GiveBackStockQuantity()
-        {
-            foreach (var item in Items)
-            {
-                item.Product.IncreaseQuantity(item.Quantity);
-            }
-        }
-
-        /// <summary>
         /// Adding new product item and quantity to the cart.
         /// </summary>
         /// <param name="items">Adding items of cart.</param>
@@ -154,12 +143,15 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         {
             ArgumentNullException.ThrowIfNull(cancelledBy, nameof(cancelledBy));
 
+            foreach (var item in Items)
+            {
+                item.Cancel(cancelledBy);
+            }
+
             PurchaseStatus = PurchaseStatus.Cancelled;
             CancelledAt = DateTime.UtcNow;
             CancelledBy = cancelledBy;
             UpdatedAt = DateTime.UtcNow;
-
-            GiveBackStockQuantity();
         }
 
         /// <summary>
@@ -196,8 +188,6 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             DeletedAt = DateTime.UtcNow;
             DeletedBy = deletedBy;
             UpdatedAt = DateTime.UtcNow;
-
-            GiveBackStockQuantity();
         }
 
         /// <summary>
@@ -206,7 +196,9 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         /// </summary>
         public void RefreshTotalAmount()
         {
-            TotalSaleAmount = Items.Sum(i => i.TotalAmount);
+            TotalSaleAmount = Items
+                .Where(i => i.PurchaseStatus is PurchaseStatus.Created)
+                .Sum(i => i.TotalAmount);
         }
 
         /// <summary>
@@ -228,16 +220,17 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         }
 
         /// <summary>
-        /// Update quantity of item.
+        /// Change quantity of item.
         /// </summary>
         /// <param name="items">Items to update the quantity.</param>
-        public void UpdateItems(params CartItem[] items)
+        public void ChangeQuantities(params CartItem[] items)
         {
             ArgumentNullException.ThrowIfNull(items, nameof(items));
 
             var joinedCartItems =
                 from pi in items
                 join ci in Items on pi.ProductId equals ci.ProductId
+                where ci.PurchaseStatus is PurchaseStatus.Created
                 select new
                 {
                     ParameterCartItem = pi,
@@ -246,22 +239,6 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
 
             foreach (var joined in joinedCartItems)
             {
-                if (joined.CurrentCartItem.PurchaseStatus != PurchaseStatus.Created)
-                {
-                    continue;
-                }
-
-                if (joined.ParameterCartItem.Quantity < joined.CurrentCartItem.Quantity)
-                {
-                    var giveBackQuantity = joined.CurrentCartItem.Quantity - joined.ParameterCartItem.Quantity;
-                    joined.ParameterCartItem.Product.IncreaseQuantity(giveBackQuantity);
-                }
-                else if (joined.ParameterCartItem.Quantity > joined.CurrentCartItem.Quantity)
-                {
-                    var buyMoreQuantity = joined.ParameterCartItem.Quantity - joined.CurrentCartItem.Quantity;
-                    joined.ParameterCartItem.Product.DecreaseQuantity(buyMoreQuantity);
-                }
-
                 joined.CurrentCartItem.ChangeQuantity(joined.ParameterCartItem.Quantity);
             }
 
