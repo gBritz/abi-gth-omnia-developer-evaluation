@@ -139,7 +139,7 @@ public class UpdateCartHandler : IRequestHandler<UpdateCartCommand, CartResult>
         var existingItems = cartItems
             .Where(i => cart.Items.Any(ci => ci.ProductId == i.ProductId))
             .ToArray();
-        cart.UpdateItems(existingItems);
+        cart.ChangeQuantities(existingItems);
 
         var newItems = cartItems
             .Where(i => !cart.Items.Any(ci => ci.ProductId == i.ProductId))

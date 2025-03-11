@@ -121,7 +121,7 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
 
             if (quantity <= 0)
             {
-                throw new ArgumentOutOfRangeException("Quantity must be positive value");
+                throw new ArgumentOutOfRangeException(nameof(quantity), "Quantity must be positive value");
             }
 
             CartItem cartItem = new()
@@ -139,21 +139,31 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         }
 
         /// <summary>
-        /// Apply discounts.
+        /// Apply discounts percentage.
         /// </summary>
         /// <param name="percentage">Percentage to discount</param>
         /// <exception cref="ArgumentOutOfRangeException">Occurs when percentage is negative value.</exception>
         public void ApplyDiscount(decimal percentage)
         {
-            if (percentage < 0)
-            {
-                throw new ArgumentOutOfRangeException("Percentage must be positive or zero value");
-            }
-
             DiscountPercentage = percentage;
-            DiscountAmount = TotalPreDiscounts * (percentage / 100);
+            DiscountAmount = CalculateDiscount(percentage);
 
             RefreshTotalAmount();
+        }
+
+        /// <summary>
+        /// Calculate discounts from percentage.
+        /// </summary>
+        /// <param name="percentage">Percentage to discount</param>
+        /// <exception cref="ArgumentOutOfRangeException">Occurs when percentage is negative value.</exception>
+        public decimal CalculateDiscount(decimal percentage)
+        {
+            if (percentage < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(percentage), "Percentage must be positive or zero value");
+            }
+
+            return TotalPreDiscounts * (percentage / 100);
         }
 
         /// <summary>
@@ -168,17 +178,26 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             CancelledAt = DateTime.UtcNow;
             CancelledBy = cancelledBy;
             UpdatedAt = DateTime.UtcNow;
+
+            Product.IncreaseQuantity(Quantity);
         }
 
-        public void ChangeQuantity(int quantity)
+        /// <summary>
+        /// Change quantity.
+        /// </summary>
+        /// <param name="newQuantity">New quantitty to be changed.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Occurs when value is negative or zero.</exception>
+        public void ChangeQuantity(int newQuantity)
         {
-            if (quantity <= 0)
+            if (newQuantity <= 0)
             {
-                throw new ArgumentOutOfRangeException("Quantity must be positive non zero value");
+                throw new ArgumentOutOfRangeException(nameof(newQuantity), "New quantity must be positive non zero value");
             }
 
-            Quantity = quantity;
-            TotalPreDiscounts = quantity * UnitPrice;
+            UpdateProductStock(newQuantity);
+
+            Quantity = newQuantity;
+            TotalPreDiscounts = newQuantity * UnitPrice;
             UpdatedAt = DateTime.UtcNow;
 
             RefreshTotalAmount();
@@ -197,7 +216,6 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
             PurchaseStatus = PurchaseStatus.Deleted;
             DeletedAt = DateTime.UtcNow;
             DeletedBy = deletedBy;
-            Product.IncreaseQuantity(Quantity);
         }
 
         /// <summary>
@@ -207,6 +225,24 @@ namespace Ambev.DeveloperEvaluation.Domain.Entities
         private void RefreshTotalAmount()
         {
             TotalAmount = TotalPreDiscounts - DiscountAmount;
+        }
+
+        /// <summary>
+        /// Update the stock of product.
+        /// </summary>
+        /// <param name="newQuantity">New quantity value.</param>
+        private void UpdateProductStock(int newQuantity)
+        {
+            if (newQuantity < Quantity)
+            {
+                var giveBackQuantity = Quantity - newQuantity;
+                Product.IncreaseQuantity(giveBackQuantity);
+            }
+            else if (newQuantity > Quantity)
+            {
+                var buyMoreQuantity = newQuantity - Quantity;
+                Product.DecreaseQuantity(buyMoreQuantity);
+            }
         }
     }
 }
