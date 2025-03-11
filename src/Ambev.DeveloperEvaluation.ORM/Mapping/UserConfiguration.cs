@@ -33,7 +33,7 @@ internal class UserConfiguration : IEntityTypeConfiguration<User>
             {
                 Id = Guid.NewGuid(),
                 Username = "admin",
-                Password = "12345zZ@",
+                Password = "$2a$11$uXrL7R90QQ4G1bILyQjFNeoFZZPXG2hDtW37kp2fN.5Gpc5Zg1Qv2",
                 Phone = "51981344567",
                 Email = "admin@gmail.com",
                 Status = Domain.Enums.UserStatus.Active,

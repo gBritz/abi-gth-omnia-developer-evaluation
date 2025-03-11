@@ -32,7 +32,7 @@ namespace Ambev.DeveloperEvaluation.ORM.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreatedAt", "Email", "Password", "Phone", "Role", "Status", "UpdatedAt", "Username" },
-                values: new object[] { new Guid("03427611-5bd8-40af-9b24-16192d7cace6"), new DateTime(2025, 3, 11, 9, 28, 15, 341, DateTimeKind.Utc).AddTicks(6233), "admin@gmail.com", "12345zZ@", "51981344567", "Admin", "Active", null, "admin" });
+                values: new object[] { new Guid("03427611-5bd8-40af-9b24-16192d7cace6"), new DateTime(2025, 3, 11, 9, 28, 15, 341, DateTimeKind.Utc).AddTicks(6233), "admin@gmail.com", "$2a$11$uXrL7R90QQ4G1bILyQjFNeoFZZPXG2hDtW37kp2fN.5Gpc5Zg1Qv2", "51981344567", "Admin", "Active", null, "admin" });
         }
 
         /// <inheritdoc />
