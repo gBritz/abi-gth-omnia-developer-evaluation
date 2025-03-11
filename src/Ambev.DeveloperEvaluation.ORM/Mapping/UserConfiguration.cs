@@ -28,5 +28,16 @@ internal class UserConfiguration : IEntityTypeConfiguration<User>
             .HasConversion<string>()
             .HasMaxLength(20);
 
+        builder.HasData(
+            new User
+            {
+                Id = Guid.NewGuid(),
+                Username = "admin",
+                Password = "12345zZ@",
+                Phone = "51981344567",
+                Email = "admin@gmail.com",
+                Status = Domain.Enums.UserStatus.Active,
+                Role = Domain.Enums.UserRole.Admin,
+            });
     }
 }
