@@ -42,6 +42,23 @@ public class CreateProductHandlerTests
     }
 
     /// <summary>
+    /// Tests that an invalid request should be return validation errors.
+    /// </summary>
+    [Fact(DisplayName = "Given invalid command When validate Then result validation errors")]
+    public void Handle_InvalidRequest_ReturnValidationError()
+    {
+        // Given
+        var command = new CreateProductCommand();
+
+        // When
+        var validationResult = command.Validate();
+
+        // Then
+        validationResult.Should().NotBeNull();
+        validationResult.Errors.Should().NotBeEmpty();
+    }
+
+    /// <summary>
     /// Tests that an invalid request when try to create product throws a validation exception.
     /// </summary>
     [Fact(DisplayName = "Given invalid request When try create product Then throws validation exception")]
@@ -81,7 +98,7 @@ public class CreateProductHandlerTests
     /// Tests that an valid request when delete product should return true to indicates a success operation.
     /// </summary>
     [Fact(DisplayName = "Given valid product identifier When to create a product Then should return true to indicates a success operation")]
-    public async Task Handle_ValidRequest_Should_Returns_Success()
+    public async Task Handle_ValidRequest_And_Exists_Category_Should_Returns_Success()
     {
         // Given
         var productId = Guid.NewGuid();
@@ -116,5 +133,45 @@ public class CreateProductHandlerTests
         // Then
         result.Should().NotBeNull();
         result.Id.Should().Be(productId);
+    }
+
+    /// <summary>
+    /// Tests that an valid request when delete product should return true to indicates a success operation.
+    /// </summary>
+    [Fact(DisplayName = "Given valid product identifier When to create a product Then should return true to indicates a success operation")]
+    public async Task Handle_ValidRequest_And_Not_Exists_Category_Should_Returns_Success()
+    {
+        // Given
+        var productId = Guid.NewGuid();
+        var command = CreateProductHandlerTestData.GenerateValidCommand();
+
+        _unitOfWork.ApplyChangesAsync(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(1));
+        _mapper.Map<Product>(Arg.Any<CreateProductCommand>())
+            .Returns(CreateProductHandlerTestData.GenerateValidProductByCommand(command));
+        _mapper.Map<ProductResult>(Arg.Any<Product>())
+            .Returns(new ProductResult
+            {
+                Id = productId,
+                Description = command.Description,
+                Image = command.Image,
+                Price = command.Price,
+                Rating = command.Rating,
+                Title = command.Title,
+                CategoryName = command.CategoryName,
+            });
+        _categoryRepository.GetByNameAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns((Category?)null);
+
+        // TODO cenário que não tem produto, cria lendo de GetByNameAsync.
+
+        // When
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Then
+        result.Should().NotBeNull();
+        result.Id.Should().Be(productId);
+
+        _categoryRepository.ReceivedCalls().Should().NotBeEmpty(); //TODO: ver como recebeu objeto na chamada.
     }
 }
