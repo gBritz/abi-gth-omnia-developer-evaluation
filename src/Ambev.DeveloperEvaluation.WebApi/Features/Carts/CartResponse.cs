@@ -23,7 +23,7 @@ public class CartResponse
     /// <summary>
     /// Gets a branch where the sale was made.
     /// </summary>
-    public required string Branch { get; init; }
+    public string Branch { get; init; } = default!;
 
     /// <summary>
     /// Gets a sale number.
@@ -51,5 +51,5 @@ public class CartResponse
     /// <summary>
     /// Gets products in the cart.
     /// </summary>
-    public required ICollection<CartItemResponse> Products { get; init; }
+    public ICollection<CartItemResponse> Products { get; init; } = default!;
 }
