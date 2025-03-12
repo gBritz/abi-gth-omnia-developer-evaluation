@@ -38,4 +38,13 @@ public class WebSeeder(IDataContext instances)
 
         return this;
     }
+
+    public WebSeeder NewCarts(int count)
+    {
+        for (var i = 0; i < count; i++)
+        {
+            NewCart();
+        }
+        return this;
+    }
 }
