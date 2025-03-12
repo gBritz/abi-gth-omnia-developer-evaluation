@@ -1,12 +1,15 @@
+using Ambev.DeveloperEvaluation.Common.Security;
+using System;
+
 namespace Ambev.DeveloperEvaluation.WebIntegrationTesting.Security;
 
-public class UserClaims
+public class UserClaims : IUser
 {
-    public required string Email { get; set; }
+    public Guid Id { get; set; }
 
-    public required string Matricula { get; set; }
+    public string Username { get; set; } = string.Empty;
 
-    public required string NomeCompleto { get; set; }
+    public string Email { get; set; } = string.Empty;
 
-    public required string NomePreferido { get; set; }
+    public string Role { get; set; } = string.Empty;
 }

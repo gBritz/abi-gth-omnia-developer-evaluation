@@ -19,7 +19,7 @@ namespace Ambev.DeveloperEvaluation.WebIntegrationTesting.Security
     public static IServiceCollection UseMockedJwtBearerAuhentication(
       this IServiceCollection services,
       UserClaims user,
-      Action<List<Claim>> claimsChanger = null)
+      Action<List<Claim>>? claimsChanger = null)
     {
       ArgumentNullException.ThrowIfNull(services, nameof(services));
 
@@ -41,18 +41,8 @@ namespace Ambev.DeveloperEvaluation.WebIntegrationTesting.Security
             new("jti", "token"),
             new("iss", AuthenticationSchemas.Bearer),
             new(ClaimTypes.Email, user.Email ?? string.Empty),
-            new(ClaimTypes.Name, user.NomeCompleto ?? string.Empty),
+            new(ClaimTypes.Name, user.Username ?? string.Empty),
           };
-
-          if (!string.IsNullOrEmpty(user.Matricula))
-          {
-            claims.Add(new(ClaimTypes.Upn, user.Matricula));
-          }
-
-          if (!string.IsNullOrEmpty(user.NomePreferido))
-          {
-            claims.Add(new("preferred_username", user.NomePreferido));
-          }
 
           claimsChanger?.Invoke(claims);
 
