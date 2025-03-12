@@ -100,6 +100,7 @@ public class WebSeeder(IDataContext instances)
     public WebSeeder NewCustomer(Guid? id = null)
     {
         var user = UserFaker.Generate();
+        user.Status = UserStatus.Active;
 
         if (id.HasValue)
         {
@@ -108,6 +109,13 @@ public class WebSeeder(IDataContext instances)
 
         _instances.Add(user);
 
+        return this;
+    }
+
+    public WebSeeder UserSuspended()
+    {
+        var user = _instances.Last<User>();
+        user.Status = UserStatus.Suspended;
         return this;
     }
 

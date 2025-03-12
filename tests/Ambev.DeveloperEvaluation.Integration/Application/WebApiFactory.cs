@@ -39,7 +39,13 @@ public class WebApiFactory<TProgram> : WebApplicationFactory<TProgram>
     /// <summary>
     /// Injeta claims do usuário da requisição http.
     /// </summary>
-    public UserClaims User { get; init; } = new();
+    public UserClaims User { get; init; } = new()
+    {
+        Id = Guid.NewGuid(),
+        Username = "Fernando",
+        Email = "fernando@gmail.com",
+        Role = "Customer",
+    };
 
     /// <summary>
     /// Serviços contidos na DI do projeto destino para serem subsituídos caso necessário no teste.
@@ -110,8 +116,6 @@ public class WebApiFactory<TProgram> : WebApplicationFactory<TProgram>
 
         builder.ConfigureServices(services =>
         {
-            services.UseMockedJwtBearerAuhentication(User);
-
             services.UseInMemoryDbContext<DefaultContext>()
               .WithSeeder(
                 NewMockMesaDbContext,
