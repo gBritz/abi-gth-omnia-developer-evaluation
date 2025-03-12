@@ -56,7 +56,7 @@ public class PaginateCartsTest : WebApiTestBase
         int expectedPageSize)
     {
         Seeder = seeder => seeder
-            .NewCarts(23);
+            .NewManyCarts(23);
 
         var response = await HttpClient.GetFromJsonAsync<PaginatedResponse<CartResponse>>($"/api/carts?_page={page}");
 
