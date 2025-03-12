@@ -11,7 +11,7 @@ A development test for evaluation in a selection process.
 Observing skills in software development, code organization, best practices, and technical problem-solving.
 
 ## Getting Started
-Instructions to how start project [Getting Started](/.docs/getting-started.md)
+Instructions on how to start the project see at [Getting Started](/.docs/getting-started.md)
 
 `READ CAREFULLY`
 
@@ -72,6 +72,9 @@ These business rules define quantity-based discounting tiers and limitations:
 This section provides a high-level overview of the project and the various skills and competencies it aims to assess for developer candidates. 
 
 See [Overview](/.docs/overview.md)
+
+## Commit Message Convention
+This section provides using [Karma](https://karma-runner.github.io/6.4/dev/git-commit-msg.html) commit message convention.
 
 ## Tech Stack
 This section lists the key technologies used in the project, including the backend, testing, frontend, and database components. 
